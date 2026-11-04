@@ -105,7 +105,7 @@ body { background: var(--bg); color: var(--ivory); font-family: var(--font-ui); 
 .logo { text-align: center; user-select: none; padding-top: .5vh; }
 .mark {
   font-family: var(--font-display); font-weight: 900;
-  font-size: clamp(26px, 6.2vw, 92px); letter-spacing: .04em; line-height: 1.02; text-wrap: balance;
+  font-size: clamp(26px, calc((100vw - 540px) / 14.5), 92px); letter-spacing: .04em; line-height: 1.02; text-wrap: balance;
   background: linear-gradient(180deg, #FFF4D6 0%, var(--gold-hi) 28%, var(--gold) 50%, #6f4f22 52%, #a8854a 70%, #5a3f1a 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 0 1px #000) drop-shadow(0 3px 0 #120b03) drop-shadow(0 0 26px rgba(229, 199, 122, .3));
@@ -314,7 +314,7 @@ body { background: var(--bg); color: var(--ivory); font-family: var(--font-ui); 
 /* ---------------- responsive ---------------- */
 @media (max-width: 1180px) { .side { width: 252px; } }
 @media (max-height: 800px) and (min-width: 901px) {
-  .mark { font-size: clamp(30px, 5.2vw, 66px); }
+  .mark { font-size: clamp(26px, min(5.2vw, calc((100vw - 540px) / 14.5)), 66px); }
   .logo .flourish { margin: 5px auto 3px; }
   .tagline { margin-top: 6px; }
   .login { padding: 38px 24px 16px; gap: 8px; margin-top: 34px; }
@@ -323,6 +323,7 @@ body { background: var(--bg); color: var(--ivory); font-family: var(--font-ui); 
 }
 @media (max-height: 680px) and (min-width: 901px) { .status { display: none; } .sub { display: none; } }
 @media (max-width: 900px) {
+  .mark { font-size: clamp(26px, 6.2vw, 56px); }
   .side { display: none; }
   .ticker { display: block; }
   .ui { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
