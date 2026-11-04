@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A launch-day parody of a fantasy MMO login screen. Sit in the queue forever.">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<title>World of Quecraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: full-bleed cinematic scene; crest-topped login artifact bottom-centre; launch news at left; realm HUD top-right; menu column bottom-right. Single dark world by design. */
+:root {
+  color-scheme: dark;
+  --bg: #090B10;
+  --bg-2: #111827;
+  --navy: #101B2C;
+  --gold: #B99A57;
+  --gold-hi: #E5C77A;
+  --bronze: #72542E;
+  --arcane: #347BB9;
+  --cyan: #67C8E8;
+  --crimson: #762C32;
+  --stone: #44464B;
+  --ivory: #EFE6CF;
+  --muted: #A79F8A;
+  --error: #E58A7C;
+  --ok: #7CCB9A;
+  --noise: none;
+
+  --font-display: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+  --font-head: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --font-serif: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-ui: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --metal-ring: 0 0 0 1px #000, 0 0 0 3px var(--bronze), 0 0 0 4px #1b130a, 0 0 0 5px var(--gold), 0 0 0 6px #000;
+  --metal-ring-sm: 0 0 0 1px #000, 0 0 0 2px var(--bronze), 0 0 0 3px var(--gold), 0 0 0 4px #000;
+  --inset-stone: inset 0 0 0 1px rgba(229, 199, 122, .16), inset 0 1px 0 rgba(255, 255, 255, .05), inset 0 0 40px rgba(0, 0, 0, .85);
+  --drop: 0 18px 50px rgba(0, 0, 0, .75);
+  --glow-gold: 0 0 18px rgba(229, 199, 122, .3);
+  --glow-arc: 0 0 0 1px var(--cyan), 0 0 16px rgba(103, 200, 232, .42);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ivory); font-family: var(--font-ui); font-size: 15px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.vignette { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse 75% 70% at 50% 46%, transparent 50%, rgba(3, 4, 8, .72) 100%); }
+.grain { position: fixed; inset: -50px; pointer-events: none; opacity: .06; mix-blend-mode: overlay; animation: grain .6s steps(4) infinite; }
+@keyframes grain { 0% { transform: translate(0, 0); } 25% { transform: translate(-17px, 11px); } 50% { transform: translate(13px, -21px); } 75% { transform: translate(-9px, -7px); } }
+
+/* ---------------- material: dark stone set in aged gold ---------------- */
+.panel {
+  position: relative; color: var(--ivory);
+  background:
+    radial-gradient(120% 55% at 50% 0%, rgba(52, 123, 185, .13), transparent 62%),
+    radial-gradient(90% 60% at 50% 110%, rgba(118, 44, 50, .12), transparent 60%),
+    linear-gradient(180deg, #181b24 0%, #0e1016 55%, #0a0b10 100%);
+  box-shadow: var(--metal-ring), var(--inset-stone), var(--drop);
+}
+.panel::before { content: ""; position: absolute; inset: 8px; pointer-events: none; border: 1px solid rgba(185, 154, 87, .22); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .4); }
+.panel::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--noise); background-size: 160px; opacity: .08; mix-blend-mode: overlay; }
+.panel.sm { box-shadow: var(--metal-ring-sm), var(--inset-stone), 0 10px 30px rgba(0, 0, 0, .7); }
+.panel.sm::before { inset: 5px; }
+
+.orn { position: absolute; width: 46px; height: 46px; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)); }
+.orn svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.orn.tl { top: -10px; left: -10px; }
+.orn.tr { top: -10px; right: -10px; transform: scaleX(-1); }
+.orn.bl { bottom: -10px; left: -10px; transform: scaleY(-1); }
+.orn.br { bottom: -10px; right: -10px; transform: scale(-1); }
+.panel.sm .orn { width: 30px; height: 30px; }
+.panel.sm .orn.tl { top: -7px; left: -7px; } .panel.sm .orn.tr { top: -7px; right: -7px; }
+.panel.sm .orn.bl { bottom: -7px; left: -7px; } .panel.sm .orn.br { bottom: -7px; right: -7px; }
+
+.flourish { display: block; width: min(220px, 80%); height: 14px; margin: 4px auto; overflow: visible; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .9)); }
+.ph {
+  margin: 0; text-align: center; text-wrap: balance;
+  font: 700 15px/1.2 var(--font-head); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-hi);
+  text-shadow: 0 1px 0 #000, 0 0 14px rgba(229, 199, 122, .22);
+}
+.ph .ico { width: 15px; height: 15px; vertical-align: -2px; margin-right: 7px; color: var(--cyan); filter: drop-shadow(0 0 4px rgba(103, 200, 232, .6)); }
+.ico { width: 16px; height: 16px; flex: none; display: inline-block; }
+.rule { height: 1px; margin: 4px 6px; background: linear-gradient(90deg, transparent, rgba(185, 154, 87, .55), transparent); box-shadow: 0 1px 0 rgba(0, 0, 0, .7); }
+
+/* ---------------- composition ---------------- */
+.ui {
+  position: fixed; inset: 0;
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto;
+  padding-top: max(18px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  transition: opacity 1.6s ease;
+}
+.gone { opacity: 0 !important; pointer-events: none !important; }
+
+.logo { text-align: center; user-select: none; padding-top: .5vh; }
+.mark {
+  font-family: var(--font-display); font-weight: 900;
+  font-size: clamp(26px, 6.2vw, 92px); letter-spacing: .04em; line-height: 1.02; text-wrap: balance;
+  background: linear-gradient(180deg, #FFF4D6 0%, var(--gold-hi) 28%, var(--gold) 50%, #6f4f22 52%, #a8854a 70%, #5a3f1a 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 1px #000) drop-shadow(0 3px 0 #120b03) drop-shadow(0 0 26px rgba(229, 199, 122, .3));
+}
+.logo .flourish { width: clamp(180px, 26vw, 340px); height: 16px; margin: 8px auto 6px; }
+.sub {
+  font: italic 600 clamp(15px, 1.9vw, 23px)/1.2 var(--font-serif); letter-spacing: .06em; color: var(--ivory);
+  text-shadow: 0 1px 2px #000, 0 0 14px rgba(103, 200, 232, .35);
+}
+.tagline {
+  margin-top: 10px; text-wrap: balance;
+  font: 700 clamp(11px, 1.25vw, 15px)/1.35 var(--font-head); letter-spacing: .28em; text-transform: uppercase; color: var(--gold-hi);
+  text-shadow: 0 1px 0 #000, 0 0 3px #000, 0 0 16px rgba(229, 199, 122, .3);
+}
+
+.mid { display: flex; align-items: flex-start; justify-content: center; min-height: 0; padding-top: 14px; }
+.ticker { display: none; max-width: 100%; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.ticker b { color: var(--gold-hi); font-weight: 700; }
+
+/* ---------------- login artifact ---------------- */
+.login { justify-self: center; width: min(340px, 100%); margin: 40px 0 14px; padding: 42px 28px 20px; display: flex; flex-direction: column; gap: 10px; }
+.crest { position: absolute; top: -33px; left: 50%; width: 156px; height: 62px; transform: translateX(-50%); z-index: 3; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85)); }
+.crest svg { width: 100%; height: 100%; overflow: visible; }
+.crest::after { content: ""; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(103, 200, 232, .55), transparent 70%); animation: breathe 5s ease-in-out infinite; pointer-events: none; }
+@keyframes breathe { 50% { opacity: .35; transform: translate(-50%, -50%) scale(1.25); } }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font: 700 18px/1.1 var(--font-serif); font-variant: small-caps; letter-spacing: .05em; color: var(--ivory); text-align: center; text-shadow: 0 1px 2px #000; }
+.input-wrap { position: relative; }
+.input-wrap::before, .input-wrap::after {
+  content: ""; position: absolute; top: 50%; width: 7px; height: 7px; z-index: 1;
+  background: linear-gradient(135deg, var(--gold-hi), var(--bronze)); box-shadow: 0 0 0 1px #000;
+  transform: translateY(-50%) rotate(45deg); transition: background .3s, box-shadow .3s;
+}
+.input-wrap::before { left: -4px; } .input-wrap::after { right: -4px; }
+.input-wrap:focus-within::before, .input-wrap:focus-within::after { background: linear-gradient(135deg, #DDF6FF, var(--arcane)); box-shadow: 0 0 0 1px #000, 0 0 8px var(--cyan); }
+.input {
+  width: 100%; display: block; padding: 10px 16px;
+  font: 500 16px var(--font-ui); color: var(--ivory); text-align: center; letter-spacing: .02em;
+  background: linear-gradient(180deg, #06070A, #0F1117); border: 1px solid #000; border-radius: 0;
+  box-shadow: 0 0 0 1px rgba(185, 154, 87, .42), inset 0 2px 8px rgba(0, 0, 0, .9), inset 0 -1px 0 rgba(229, 199, 122, .07);
+  transition: box-shadow .3s var(--ease), background .3s var(--ease);
+}
+.input::placeholder { color: rgba(185, 154, 87, .6); font-style: italic; }
+.input:hover { box-shadow: 0 0 0 1px rgba(229, 199, 122, .75), inset 0 2px 8px rgba(0, 0, 0, .9); }
+.input:focus { outline: none; background: linear-gradient(180deg, #070A10, #0F1622); box-shadow: var(--glow-arc), inset 0 2px 8px rgba(0, 0, 0, .9); }
+.input[aria-invalid="true"] { box-shadow: 0 0 0 1px var(--error), 0 0 14px rgba(118, 44, 50, .8), inset 0 2px 8px rgba(0, 0, 0, .9); }
+.input:disabled { opacity: .45; cursor: not-allowed; }
+.err { margin: 0; font: italic 600 15px/1.2 var(--font-serif); color: var(--error); text-align: center; text-shadow: 0 1px 2px #000; }
+.err:empty { display: none; }
+.shake { animation: shake .36s var(--ease); }
+@keyframes shake { 20% { transform: translateX(-5px); } 45% { transform: translateX(4px); } 70% { transform: translateX(-2px); } }
+
+/* primary: antique gold plate */
+.btn-gold {
+  position: relative; overflow: hidden; width: 100%; margin-top: 4px; padding: 12px 16px; cursor: pointer;
+  font: 900 16px/1 var(--font-head); letter-spacing: .16em; text-transform: uppercase; color: #22170A;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .55);
+  background: linear-gradient(180deg, #F6E2A6 0%, var(--gold-hi) 16%, var(--gold) 48%, #8A6A35 51%, var(--gold) 82%, var(--bronze) 100%);
+  border: 1px solid #2E2010;
+  box-shadow: inset 0 1px 0 rgba(255, 250, 230, .75), inset 0 -2px 0 rgba(60, 40, 10, .55), 0 0 0 1px #000, 0 0 0 3px rgba(114, 84, 46, .85), 0 0 0 4px #000, 0 5px 12px rgba(0, 0, 0, .6);
+  transition: filter .25s var(--ease), box-shadow .3s var(--ease), transform .1s;
+}
+.btn-gold::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 252, 235, .55) 50%, transparent 65%); transform: translateX(-120%); transition: transform .9s var(--ease); pointer-events: none; }
+.btn-gold:hover { filter: brightness(1.08) saturate(1.05); box-shadow: inset 0 1px 0 rgba(255, 250, 230, .8), inset 0 -2px 0 rgba(60, 40, 10, .55), 0 0 0 1px #000, 0 0 0 3px rgba(114, 84, 46, .85), 0 0 0 4px #000, 0 0 24px rgba(229, 199, 122, .45); }
+.btn-gold:hover::after { transform: translateX(120%); }
+.btn-gold:active { transform: translateY(1px); filter: brightness(.95); box-shadow: inset 0 2px 6px rgba(60, 40, 10, .7), 0 0 0 1px #000, 0 0 0 3px rgba(114, 84, 46, .85), 0 0 0 4px #000; }
+.btn-gold:focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
+.btn-gold:disabled { filter: grayscale(.7) brightness(.7); cursor: progress; }
+.btn-gold.ok { animation: okglow .9s var(--ease); }
+@keyframes okglow { 40% { box-shadow: inset 0 1px 0 rgba(255,250,230,.8), 0 0 0 1px #000, 0 0 0 3px rgba(114,84,46,.85), 0 0 0 4px #000, 0 0 30px rgba(124, 203, 154, .55); } }
+
+/* secondary: dark bronze */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+  padding: 9px 16px; font: 700 12.5px/1.1 var(--font-head); letter-spacing: .1em; text-transform: uppercase; color: var(--gold);
+  text-shadow: 0 1px 0 #000;
+  background: linear-gradient(180deg, #2B2319 0%, #1A150F 52%, #110D09 100%);
+  border: 1px solid #000;
+  box-shadow: 0 0 0 1px var(--bronze), inset 0 1px 0 rgba(229, 199, 122, .2), inset 0 -1px 0 rgba(0, 0, 0, .6), 0 3px 8px rgba(0, 0, 0, .5);
+  transition: color .25s var(--ease), box-shadow .3s var(--ease), filter .25s var(--ease), transform .1s;
+}
+.btn .ico { width: 15px; height: 15px; }
+.btn:hover { color: var(--gold-hi); filter: brightness(1.12); box-shadow: 0 0 0 1px var(--gold), inset 0 1px 0 rgba(229, 199, 122, .3), 0 0 16px rgba(229, 199, 122, .22); }
+.btn:active { transform: translateY(1px); box-shadow: 0 0 0 1px var(--bronze), inset 0 2px 6px rgba(0, 0, 0, .85); }
+.btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.btn.icon { padding: 8px 9px; }
+.btn.primary { color: #22170A; text-shadow: 0 1px 0 rgba(255,240,200,.5); background: linear-gradient(180deg, #F6E2A6, var(--gold-hi) 20%, var(--gold) 55%, var(--bronze)); box-shadow: 0 0 0 1px #000, 0 0 0 2px var(--bronze), inset 0 1px 0 rgba(255,250,230,.7); }
+.btn.primary:hover { color: #000; box-shadow: 0 0 0 1px #000, 0 0 0 2px var(--gold), 0 0 18px rgba(229,199,122,.45); }
+
+.check { display: flex; align-items: center; justify-content: center; gap: 9px; font: 600 15px var(--font-serif); color: var(--muted); cursor: pointer; text-shadow: 0 1px 2px #000; }
+.check input { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; display: grid; place-content: center; cursor: pointer; background: #07080B; border: 1px solid #000; box-shadow: 0 0 0 1px var(--gold), inset 0 1px 3px #000; transition: box-shadow .25s; }
+.check input::before { content: ""; width: 7px; height: 7px; transform: rotate(45deg) scale(0); background: var(--gold-hi); box-shadow: 0 0 6px rgba(229, 199, 122, .7); transition: transform .2s var(--ease); }
+.check input:checked::before { transform: rotate(45deg) scale(1); }
+.check input:hover { box-shadow: 0 0 0 1px var(--gold-hi), inset 0 1px 3px #000; }
+.check input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+.realm-select {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 12px; cursor: pointer; text-align: left;
+  color: var(--ivory); background: linear-gradient(90deg, rgba(16, 27, 44, .95), rgba(16, 27, 44, .55));
+  border: 1px solid #000; box-shadow: 0 0 0 1px rgba(52, 123, 185, .55), inset 0 0 14px rgba(0, 0, 0, .6);
+  transition: box-shadow .3s var(--ease);
+}
+.realm-select .ico { width: 22px; height: 22px; color: var(--cyan); filter: drop-shadow(0 0 5px rgba(103, 200, 232, .55)); }
+.rs-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.rs-text small { font: 600 11px var(--font-head); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.rs-text b { font: 700 15px/1.2 var(--font-head); color: var(--ivory); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-change { font: italic 600 14px var(--font-serif); color: var(--gold); }
+.realm-select:hover { box-shadow: var(--glow-arc), inset 0 0 14px rgba(0, 0, 0, .6); }
+.realm-select:hover .rs-change { color: var(--gold-hi); }
+.realm-select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.realm-select.flash-ok { animation: realmok 1.2s var(--ease); }
+@keyframes realmok { 30% { box-shadow: 0 0 0 1px var(--ok), 0 0 18px rgba(124, 203, 154, .5), inset 0 0 14px rgba(0,0,0,.6); } }
+
+.status { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.status b { color: var(--ivory); font-weight: 500; }
+.orb { width: 9px; height: 9px; border-radius: 50%; flex: none; color: var(--error); background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.75), currentColor 55%); box-shadow: 0 0 0 1px #000, 0 0 8px currentColor; animation: orb 2.6s ease-in-out infinite; }
+.orb.ok { color: var(--ok); } .orb.warn { color: var(--gold-hi); } .orb.busy { color: #E0806A; } .orb.down { color: #c0392b; }
+@keyframes orb { 50% { opacity: .55; } }
+.hint { margin: 0; text-align: center; font: italic 500 14px var(--font-serif); color: var(--muted); opacity: .9; }
+
+/* ---------------- footer + menu ---------------- */
+.foot { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 12px; font-size: 12px; color: var(--muted); text-shadow: 0 1px 3px #000; }
+.foot .meta { font-variant-numeric: tabular-nums; line-height: 1.5; }
+.foot .copy { text-align: center; font: italic 500 13px var(--font-serif); }
+.menu { position: fixed; right: var(--gutter-r); bottom: max(16px, env(safe-area-inset-bottom, 0px)); width: 186px; display: flex; flex-direction: column; gap: 9px; transition: opacity 1.6s; }
+.menu .btn { justify-content: flex-start; padding: 8px 12px; font-size: 11.5px; }
+.menu .btn .ico { color: var(--gold-hi); opacity: .85; }
+.lbl-short { display: none; }
+
+/* ---------------- top-right HUD ---------------- */
+.topright { position: fixed; top: max(18px, env(safe-area-inset-top, 0px)); right: var(--gutter-r); width: 226px; display: flex; flex-direction: column; gap: 12px; transition: opacity 1.6s; }
+.hud { padding: 12px 14px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 4px; }
+.hud .row { display: flex; align-items: center; gap: 8px; }
+.hud .row .ico { width: 13px; height: 13px; color: var(--gold); opacity: .8; }
+.hud .row span { flex: 1; }
+.hud b { color: var(--ivory); font-weight: 500; }
+.hud .hot { color: var(--error); }
+.hud-btns { display: flex; gap: 8px; }
+.hud-btns #settingsBtn { flex: 1; font-size: 11.5px; }
+
+/* ---------------- left: launch news ---------------- */
+.side { position: fixed; left: var(--gutter-l); top: 158px; bottom: 54px; width: 292px; display: flex; flex-direction: column; gap: 22px; transition: opacity 1.6s; }
+.side > .panel { display: flex; flex-direction: column; min-height: 0; padding-top: 12px; }
+.news { flex: 1 1 auto; }
+.side .flourish { width: 70%; height: 10px; margin: 5px auto 2px; }
+.feed { flex: 1; min-height: 0; overflow: hidden; padding: 4px 16px 12px; font-size: 13px; line-height: 1.42; position: relative; z-index: 1; }
+.feed .item { padding: 7px 0; border-bottom: 1px solid rgba(185, 154, 87, .14); box-shadow: 0 1px 0 rgba(0, 0, 0, .6); animation: inkin .7s var(--ease); }
+.feed .item time { color: var(--gold); font-variant-numeric: tabular-nums; margin-right: 6px; font-weight: 700; }
+.feed .item b { color: var(--gold-hi); }
+.feed .item.alert { color: #F3CFC6; }
+.feed .item.alert time { color: var(--error); }
+@keyframes inkin { from { opacity: 0; transform: translateY(-5px); background: rgba(229, 199, 122, .12); } to { opacity: 1; transform: none; } }
+
+/* ---------------- dialogs ---------------- */
+.dlg { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; padding-left: var(--gutter-l); padding-right: var(--gutter-r); background: radial-gradient(ellipse at center, rgba(5, 8, 14, .4), rgba(3, 4, 8, .72)); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); animation: fadein .25s ease; }
+.dlg-box { width: min(430px, 100%); padding: 30px 28px 22px; text-align: center; animation: rise .32s var(--ease); }
+.dlg-box.wide { width: min(600px, 100%); }
+@keyframes fadein { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.dlg-box > :not(.orn) { position: relative; z-index: 1; }
+.dlg-title { margin: 0; font: 700 18px/1.25 var(--font-head); letter-spacing: .08em; color: var(--gold-hi); text-wrap: balance; text-shadow: 0 1px 0 #000, 0 0 14px rgba(229, 199, 122, .25); }
+.dlg-box .flourish { width: 180px; margin: 8px auto 10px; }
+.dlg-text { margin: 0 0 5px; line-height: 1.5; color: var(--ivory); font-variant-numeric: tabular-nums; text-wrap: balance; }
+.dlg-text.small { color: var(--muted); font: italic 500 15px/1.4 var(--font-serif); }
+.dlg-text .big { font: 900 26px var(--font-head); color: #fff; text-shadow: 0 0 14px rgba(103, 200, 232, .45); }
+.dlg-btns { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+.spinner { position: relative; width: 50px; height: 50px; margin: 14px auto 4px; border-radius: 50%; border: 2px dotted rgba(103, 200, 232, .55); animation: spin 7s linear infinite; }
+.spinner::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--cyan); border-bottom-color: var(--gold); animation: spin 1.5s linear infinite reverse; }
+.spinner::after { content: ""; position: absolute; inset: 19px; border-radius: 50%; background: radial-gradient(circle, #E8FBFF, var(--cyan) 60%, transparent); box-shadow: 0 0 14px var(--cyan); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.bar { height: 14px; margin: 14px 2px 8px; background: #030405; box-shadow: 0 0 0 1px #000, 0 0 0 2px var(--bronze), inset 0 2px 4px #000; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(180deg, #F6E2A6, var(--gold) 50%, var(--bronze)); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(229, 199, 122, .4); transition: width .2s; }
+
+.tablewrap { overflow: auto; max-height: 52vh; margin-top: 4px; }
+.realms { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; font-variant-numeric: tabular-nums; }
+.realms th { position: sticky; top: 0; background: #12141B; font: 700 11.5px var(--font-head); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); padding: 6px 8px; border-bottom: 1px solid rgba(185, 154, 87, .5); }
+.realms td { padding: 7px 8px; border-bottom: 1px solid rgba(185, 154, 87, .12); transition: background .2s; }
+.realms tr.pick { cursor: pointer; }
+.realms tr.pick:hover td, .realms tr.pick:focus-visible td { background: rgba(229, 199, 122, .1); }
+.realms tr.pick:focus-visible { outline: 1px solid var(--gold-hi); }
+.realms tr.sel td { background: rgba(52, 123, 185, .14); }
+.realms tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--cyan); }
+.pop-full, .pop-off { color: var(--error); }
+.pop-high { color: var(--gold-hi); }
+.pop-med, .pop-new { color: var(--ok); }
+
+.credits { height: 220px; overflow: hidden; position: relative; -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+.credits div { position: absolute; left: 0; right: 0; animation: roll 40s linear infinite; line-height: 1.6; font: 500 17px/1.55 var(--font-serif); }
+.credits h4 { font: 700 12px var(--font-head); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 16px 0 2px; }
+@keyframes roll { from { transform: translateY(220px); } to { transform: translateY(-100%); } }
+.opt { display: grid; grid-template-columns: auto 1fr; gap: 12px 16px; align-items: center; text-align: left; margin-top: 6px; font: 600 16px var(--font-serif); }
+.opt input[type=range] { width: 100%; accent-color: var(--gold); }
+
+.toast { position: fixed; top: 24%; left: 50%; z-index: 6; max-width: calc(100% - 40px); padding: 14px 30px 12px; text-align: center; opacity: 0; transform: translate(-50%, -10px); transition: opacity .6s var(--ease), transform .6s var(--ease); pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast > :not(.orn) { position: relative; z-index: 1; }
+.toast small { display: block; font: 700 10.5px var(--font-head); letter-spacing: .3em; text-transform: uppercase; color: var(--cyan); }
+.toast b { display: block; margin: 2px 0; font: 700 18px var(--font-head); color: var(--gold-hi); text-shadow: 0 0 14px rgba(229, 199, 122, .35); }
+.toast span { display: block; font: italic 500 15px var(--font-serif); color: var(--muted); }
+
+.veil { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; background: #000; opacity: 0; pointer-events: none; transition: opacity 1.6s; }
+.veil.on { opacity: 1; pointer-events: auto; }
+.veil p { font: italic 500 22px var(--font-serif); color: var(--muted); letter-spacing: .04em; }
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 1180px) { .side { width: 252px; } }
+@media (max-height: 800px) and (min-width: 901px) {
+  .mark { font-size: clamp(30px, 5.2vw, 66px); }
+  .logo .flourish { margin: 5px auto 3px; }
+  .tagline { margin-top: 6px; }
+  .login { padding: 38px 24px 16px; gap: 8px; margin-top: 34px; }
+  .hint { display: none; }
+  .side { top: 136px; }
+}
+@media (max-height: 680px) and (min-width: 901px) { .status { display: none; } .sub { display: none; } }
+@media (max-width: 900px) {
+  .side { display: none; }
+  .ticker { display: block; }
+  .ui { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+  .topright { left: var(--gutter-l); width: auto; flex-direction: row; gap: 10px; }
+  .hud { flex: 1; flex-direction: row; flex-wrap: wrap; justify-content: space-between; padding: 8px 12px; gap: 2px 14px; }
+  .hud .row.wq { display: none; }
+  .hud .row span { flex: none; }
+  .logo { padding-top: 66px; }
+  .menu {
+    left: 0; right: 0; bottom: 0; width: auto; flex-direction: row; gap: 4px;
+    padding: 8px var(--gutter-r) max(8px, env(safe-area-inset-bottom, 0px)) var(--gutter-l);
+    background: linear-gradient(180deg, #15171f, #0a0b10);
+    box-shadow: 0 -1px 0 #000, 0 -2px 0 var(--bronze), 0 -3px 0 rgba(185, 154, 87, .6), 0 -10px 30px rgba(0, 0, 0, .6);
+  }
+  .menu .btn { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 3px; padding: 7px 2px; font-size: 9.5px; letter-spacing: .06em; }
+  .menu .btn .ico { width: 17px; height: 17px; }
+  .lbl-long { display: none; } .lbl-short { display: inline; }
+  .foot { grid-template-columns: 1fr; text-align: center; gap: 2px; }
+  .foot .meta { font-size: 11px; }
+}
+@media (max-width: 900px) {
+  .topright { align-items: center; }
+  .hud .row { white-space: nowrap; }
+  .hud-btns { align-items: center; }
+}
+@media (max-width: 520px) {
+  .topright { top: max(12px, env(safe-area-inset-top, 0px)); }
+  .hud { justify-content: center; padding: 7px 10px; }
+  .hud .row:not(.sess) { display: none; }
+  .logo { padding-top: 60px; }
+  .logo .flourish, .sub { display: none; }
+  .tagline { margin-top: 8px; }
+  .login { padding: 34px 16px 14px; margin-top: 30px; gap: 7px; }
+  .crest { width: 126px; height: 50px; top: -27px; }
+  .field label { font-size: 16px; }
+  .input { padding: 8px 14px; }
+  .btn-gold { padding: 11px 14px; }
+  .hint { display: none; }
+  .foot .copy { display: none; }
+  .mid { padding-top: 8px; }
+}
+@media (max-width: 900px) and (max-height: 880px) { .ticker { display: none; } }
+@media (max-width: 900px) and (max-height: 700px) { .sub, .tagline { display: none; } .logo { padding-top: 56px; } .hint, .status { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .grain, .crest::after, .orb { animation: none; }
+  .credits div { animation-duration: 100s; }
+  .spinner, .spinner::before { animation-duration: 4s; }
+  .btn-gold::after { display: none; }
+  .shake { animation: none; }
+  .dlg, .dlg-box, .feed .item { animation: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6E3A8"/><stop offset=".3" stop-color="#E5C77A"/><stop offset=".58" stop-color="#B99A57"/><stop offset=".82" stop-color="#72542E"/><stop offset="1" stop-color="#C9A962"/>
+    </linearGradient>
+    <radialGradient id="gArc" cx=".4" cy=".35" r=".7">
+      <stop offset="0" stop-color="#E8FBFF"/><stop offset=".45" stop-color="#67C8E8"/><stop offset="1" stop-color="#347BB9"/>
+    </radialGradient>
+  </defs>
+  <symbol id="corner" viewBox="0 0 64 64">
+    <path fill="url(#gGold)" stroke="#24180A" stroke-width=".8" d="M3 3 H47 L53 9 H15 Q9 9 9 15 V53 L3 47 Z"/>
+    <path fill="none" stroke="url(#gGold)" stroke-width="1.3" d="M15 15 H36 M15 15 V36"/>
+    <path fill="url(#gGold)" stroke="#24180A" stroke-width=".6" d="M19 19 C27 13 37 17 34 25 C32 30 25 28 27 23 C22 26 22 32 27 34 C18 35 14 26 19 19 Z"/>
+    <circle cx="42" cy="6" r="1.8" fill="#E5C77A"/><circle cx="6" cy="42" r="1.8" fill="#E5C77A"/>
+    <path fill="url(#gGold)" stroke="#24180A" stroke-width=".8" d="M6 -1 L13 6 L6 13 L-1 6 Z"/>
+    <path fill="url(#gArc)" d="M6 2.6 L9.4 6 L6 9.4 L2.6 6 Z"/>
+  </symbol>
+  <symbol id="flourish" viewBox="0 0 240 16">
+    <path fill="url(#gGold)" d="M10 8 L104 6.6 L104 9.4 Z"/>
+    <path fill="url(#gGold)" d="M230 8 L136 6.6 L136 9.4 Z"/>
+    <path fill="none" stroke="#E5C77A" stroke-width="1.2" d="M104 8 C107 1.5 113 3 111 8 M136 8 C133 1.5 127 3 129 8"/>
+    <path fill="url(#gGold)" stroke="#24180A" stroke-width=".7" d="M120 0.5 L127.5 8 L120 15.5 L112.5 8 Z"/>
+    <path fill="url(#gArc)" d="M120 4.4 L123.6 8 L120 11.6 L116.4 8 Z"/>
+    <circle cx="5" cy="8" r="1.7" fill="#B99A57"/><circle cx="235" cy="8" r="1.7" fill="#B99A57"/>
+  </symbol>
+  <symbol id="crest" viewBox="0 0 160 64">
+    <g id="wingL"><path fill="url(#gGold)" stroke="#24180A" stroke-width=".8" d="M60 30 C46 18 26 13 4 17 C20 20 32 24 41 29 C29 27 17 29 7 35 C22 34 34 36 45 39 C37 41 29 45 23 51 C37 48 49 44 60 40 Z"/></g>
+    <use href="#wingL" transform="translate(160 0) scale(-1 1)"/>
+    <circle cx="80" cy="32" r="24" fill="url(#gGold)" stroke="#24180A" stroke-width="1"/>
+    <circle cx="80" cy="32" r="19.5" fill="#0A0D14" stroke="#000" stroke-width="1"/>
+    <circle cx="80" cy="32" r="16" fill="none" stroke="#B99A57" stroke-width="1" stroke-dasharray="2 3"/>
+    <path fill="url(#gArc)" d="M80 17 L83 28 L94 25 L86.5 32 L94 39 L83 36 L80 47 L77 36 L66 39 L73.5 32 L66 25 L77 28 Z"/>
+    <circle cx="80" cy="32" r="3" fill="#F2FDFF"/>
+  </symbol>
+  <symbol id="i-tower" viewBox="0 0 24 24"><path fill="currentColor" d="M6 22V10L4 8V3h3v2h2V3h2v2h2V3h2v2h2V3h3v5l-2 2v12h-5v-5a2 2 0 0 0-4 0v5Z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.4v2.4M12 19.2v2.4M2.4 12h2.4M19.2 12h2.4M5.2 5.2l1.7 1.7M17.1 17.1l1.7 1.7M5.2 18.8l1.7-1.7M17.1 6.9l1.7-1.7"/></g></symbol>
+  <symbol id="i-scroll" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h10a2 2 0 0 1 2 2v1h-4M8 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/><path d="M9.5 10h6M9.5 13.5h6M9.5 17h4"/></g></symbol>
+  <symbol id="i-quill" viewBox="0 0 24 24"><path fill="currentColor" d="M21 3C13 3.6 7.6 8.6 5.2 18.6l1.9.9c.9-2.6 2-4.6 3.7-6.4h4.3l-2-1.8c3.6-1.3 6.6-4.2 7.9-8.3ZM3 21h9v-1.6H3Z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 20 5v6c0 5.2-3.5 9.2-8 11-4.5-1.8-8-5.8-8-11V5Zm0 3.2L6.6 7.2V11c0 3.7 2.2 6.6 5.4 8.1Z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path fill="currentColor" d="M3 8.5 7.5 12 12 5l4.5 7L21 8.5 19 19H5Zm2 11.8h14V22H5Z"/></symbol>
+  <symbol id="i-door" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 21V5.5A2.5 2.5 0 0 1 8.5 3h7A2.5 2.5 0 0 1 18 5.5V21M3.5 21h17"/><circle cx="14.5" cy="12.5" r=".8" fill="currentColor"/></g></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/></g></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></g></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><path fill="currentColor" d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.5-.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20c0-3.6 3.1-6 7-6s7 2.4 7 6Zm14.6 0c0-2.2-.8-4-2.2-5.3.7-.2 1.4-.2 2.1-.2 3.3 0 5.5 2 5.5 5.5Z"/></symbol>
+</svg>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" id="grain" aria-hidden="true"></div>
+
+<div class="ui" id="ui">
+  <header class="logo">
+    <div class="mark">World of Quecraft</div>
+    <svg class="flourish" viewBox="0 0 240 16" aria-hidden="true"><use href="#flourish"/></svg>
+    <div class="sub">Shards of the Elder Dawn</div>
+    <div class="tagline">Launch Day Queue Simulator</div>
+  </header>
+  <div class="mid"><div class="ticker panel sm" id="ticker" aria-live="off"></div></div>
+  <form class="login panel" id="login" autocomplete="off" novalidate>
+    <span class="orn tl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn tr" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn bl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn br" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <div class="crest" aria-hidden="true"><svg viewBox="0 0 160 64"><use href="#crest"/></svg></div>
+    <h1 class="ph">Enter the Realm</h1>
+    <svg class="flourish" viewBox="0 0 240 16" aria-hidden="true"><use href="#flourish"/></svg>
+    <div class="field">
+      <label for="acct">Account Name</label>
+      <div class="input-wrap"><input class="input" id="acct" type="text" value="idlewanderer" placeholder="Enter your account name" spellcheck="false" autocomplete="off" aria-describedby="acctErr"></div>
+      <p class="err" id="acctErr" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="pw">Password</label>
+      <div class="input-wrap"><input class="input" id="pw" type="password" value="moonlit" placeholder="Enter your password" autocomplete="off" aria-describedby="pwErr"></div>
+      <p class="err" id="pwErr" role="alert"></p>
+    </div>
+    <button class="btn-gold" type="submit" id="loginBtn">Log In</button>
+    <label class="check"><input type="checkbox" id="remember" checked> Remember account name</label>
+    <div class="rule" aria-hidden="true"></div>
+    <button type="button" class="realm-select" id="changeRealm">
+      <svg class="ico" aria-hidden="true"><use href="#i-tower"/></svg>
+      <span class="rs-text"><small>Realm</small><b id="realmName">Silverhollow</b></span>
+      <span class="rs-change">Change</span>
+    </button>
+    <div class="status"><span class="orb busy" id="statusOrb" aria-hidden="true"></span><span>Login server: <b id="statusTxt">Overloaded</b></span></div>
+    <p class="hint">Any name and password works. Nothing leaves this page.</p>
+  </form>
+  <footer class="foot">
+    <div class="meta">Version 4.2.7b (51031) · Nov 3 2026 · <span id="ping">Latency: 212 ms</span></div>
+    <div class="copy">© 2026 Ember Hollow Studios (fictional) · A parody of launch day</div>
+    <div></div>
+  </footer>
+</div>
+
+<nav class="menu" id="menu" aria-label="Login menu">
+  <button class="btn" type="button" data-act="account"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg><span class="lbl-long">Manage Account</span><span class="lbl-short">Account</span></button>
+  <button class="btn" type="button" data-act="cinematics"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg><span class="lbl-long">Cinematics</span><span class="lbl-short">Cinema</span></button>
+  <button class="btn" type="button" data-act="credits"><svg class="ico" aria-hidden="true"><use href="#i-crown"/></svg><span class="lbl-long">Credits</span><span class="lbl-short">Credits</span></button>
+  <button class="btn" type="button" data-act="options"><svg class="ico" aria-hidden="true"><use href="#i-gear"/></svg><span class="lbl-long">Options</span><span class="lbl-short">Options</span></button>
+  <button class="btn" type="button" data-act="quit"><svg class="ico" aria-hidden="true"><use href="#i-door"/></svg><span class="lbl-long">Quit</span><span class="lbl-short">Quit</span></button>
+</nav>
+
+<aside class="side" id="side">
+  <section class="news panel sm" aria-label="Launch news">
+    <span class="orn tl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn tr" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn bl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn br" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <h2 class="ph"><svg class="ico" aria-hidden="true"><use href="#i-scroll"/></svg>Launch News</h2>
+    <svg class="flourish" viewBox="0 0 240 16" aria-hidden="true"><use href="#flourish"/></svg>
+    <div class="feed" id="feed"></div>
+  </section>
+</aside>
+
+<div class="topright" id="topright">
+  <div class="hud panel sm">
+    <span class="orn tl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn tr" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn bl" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <span class="orn br" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>
+    <div class="row"><svg class="ico" aria-hidden="true"><use href="#i-sun"/></svg><span>Servers opened</span><b id="tLaunch">2h 17m ago</b></div>
+    <div class="row wq"><svg class="ico" aria-hidden="true"><use href="#i-people"/></svg><span>Waiting worldwide</span><b class="hot" id="tWorld">1,284,113</b></div>
+    <div class="row sess"><svg class="ico" aria-hidden="true"><use href="#i-hourglass"/></svg><span>At the gate</span><b id="tSession">00:00:00</b></div>
+    <div class="row wq"><svg class="ico" aria-hidden="true"><use href="#i-hourglass"/></svg><span>All visits</span><b id="tTotal">0m</b></div>
+  </div>
+  <div class="hud-btns">
+    <button class="btn" type="button" id="settingsBtn" aria-label="Settings"><svg class="ico" aria-hidden="true"><use href="#i-gear"/></svg><span class="lbl-long">Settings</span></button>
+  </div>
+</div>
+
+<div class="dlg" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+  <div class="dlg-box panel" id="dlgBox"></div>
+</div>
+<div class="toast panel sm" id="toast" role="status" aria-live="polite"></div>
+<div class="veil" id="veil"><p>You can never truly leave.</p></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.random() * (b - a);
+const randInt = (a, b) => Math.floor(rand(a, b + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('aetherfall:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('aetherfall:' + k, JSON.stringify(v)); } catch (e) {} }
+};
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOTION = reduceMotion ? 0.35 : 1;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/* film grain tile */
+(() => {
+  const c = document.createElement('canvas'); c.width = c.height = 160;
+  const g = c.getContext('2d'), img = g.createImageData(160, 160);
+  for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  const url = `url(${c.toDataURL()})`;
+  $('grain').style.backgroundImage = url;
+  document.documentElement.style.setProperty('--noise', url);
+})();
+
+/* =========================== NAMES + CHAT POOL =========================== */
+const SYL_A = ['Thal', 'Bren', 'Mor', 'Kael', 'Ys', 'Dru', 'Vex', 'Orin', 'Sel', 'Grim', 'Ash', 'Lio', 'Fen', 'Rhu', 'Tor', 'Zeph', 'Mav', 'Nyx', 'Hald', 'Quin'];
+const SYL_B = ['dar', 'wyn', 'ok', 'ith', 'ra', 'mir', 'gorn', 'elle', 'ius', 'ka', 'sha', 'ric', 'eth', 'ven', 'ul', 'iss'];
+const SUFFIX = ['', '', '', '', 'x', 'xx', 'z', '123', 'lol', 'tank', 'heals', 'ii'];
+const NAME_COLORS = ['#f0c26a', '#9ad1ff', '#c79cff', '#8fe08a', '#ff9f6b', '#f58cba', '#e8e8e8', '#7ef0e6'];
+const genName = () => pick(SYL_A) + pick(SYL_B) + pick(SUFFIX);
+const nameColor = n => NAME_COLORS[[...n].reduce((a, c) => a + c.charCodeAt(0), 0) % NAME_COLORS.length];
+const CHAT = [
+  'anyone else stuck on Authenticating??', 'position 14,882 lets gooo', "got to 3 and disconnected. i'm fine. totally fine.",
+  'they should just add more servers', 'took the day off work for this', 'my estimate went from 12 min to 4 hours',
+  'is silverhollow down or is it me', 'error AF-1047 again', 'refreshing the forums every 30 seconds',
+  'WTS place in queue', 'my guild is in. i am not.', 'just got in!! ...and disconnected',
+  "new realm opened, it's already full", 'patience is a stat right?', "i'm going to sleep in this queue",
+  'the login music is honestly a bop', 'patcher has been at 99% for 20 minutes', 'brb making a sandwich, hold my spot',
+  'compensation: 1 day. wow. thanks.', 'does jumping help the queue move', "i've seen this gate more than my family",
+  'anyone know if lanternfall has a queue', 'lanternfall is full now', "it's the authentication servers, trust me",
+  'rerolling to a new realm, see you in 3 hours', 'my character name is reserved... i hope', 'estimated time: unknown. same.',
+  'first time?', 'back of the line again', 'the braziers are nice tho', 'hit 1 in queue, disconnected, now 22k',
+  "who's still here from 9am", 'we should start a guild for people stuck at login', "patch notes say 'improved login stability' lol",
+  'they restarted the auth server and my estimate went up', 'clicked log in 400 times, still not in', 'my cat walked on the keyboard and i got in. then disconnected.',
+  'the queue went UP. how', 'imagine the people who preordered', 'the forums are down too', 'stop jumping on the steps, it lags the gate',
+  'any guildies online? oh right', 'this is fine', 'i can hear the music in my sleep', 'gloamspire still offline?'
+];
+
+/* =========================== SCENE =========================== */
+const cv = $('scene'), cx = cv.getContext('2d');
+const RS = 0.72; // render scale: a little soft, like an old engine
+let W = 0, H = 0, G = null;
+let skyLayer, mtnLayer, gateLayer, fgLayer, cloudSprites = [];
+let stars = [], fog = [], flames = [], embers = [], motes = [], runes = [], crowd = [], clouds = [], bubbles = [];
+let windows = [], arcane = [], moon = { x: 0, y: 0, r: 0 };
+let storm = null, nextStorm = performance.now() / 1000 + rand(6, 12);
+
+function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function ridge(seed, n, rough) {
+  const r = seeded(seed), pts = new Array(n + 1).fill(0);
+  pts[0] = r(); pts[n] = r();
+  let step = n, amp = 1;
+  while (step > 1) { const half = step / 2; for (let i = half; i < n; i += step) pts[i] = (pts[i - half] + pts[i + half]) / 2 + (r() - 0.5) * amp; step = half; amp *= rough; }
+  return pts;
+}
+const ridges = [ridge(7, 256, 0.55), ridge(21, 256, 0.5), ridge(99, 256, 0.6)];
+function layer(w = W, h = H) { const c = document.createElement('canvas'); c.width = Math.ceil(w * RS); c.height = Math.ceil(h * RS); const g = c.getContext('2d'); g.setTransform(RS, 0, 0, RS, 0, 0); return [c, g]; }
+
+function castle(g, x, gy, s, seed, ruined) {
+  const r = seeded(seed);
+  g.fillStyle = '#0f1428';
+  g.beginPath(); g.ellipse(x, gy + s * 0.03, s * 0.78, s * 0.13, 0, Math.PI, 0); g.fill();
+  const crenel = (x0, y0, w) => {
+    const n = Math.max(3, Math.round(w / (s * 0.035))), cw = w / (n * 2 - 1);
+    for (let i = 0; i < n; i++) g.fillRect(x0 + i * cw * 2, y0 - cw * 0.9, cw, cw * 0.9 + 1);
+  };
+  const broken = (x0, y0, w) => {
+    g.beginPath(); g.moveTo(x0, y0 + 1);
+    const n = 5; for (let i = 0; i <= n; i++) g.lineTo(x0 + w * i / n, y0 - r() * s * 0.08);
+    g.lineTo(x0 + w, y0 + 1); g.closePath(); g.fill();
+  };
+  const win = (wx, wy, big) => windows.push({ x: wx, y: wy, w: s * (big ? 0.03 : 0.014), h: s * (big ? 0.04 : 0.028), ph: r() * 6.28, sp: 0.6 + r() * 2.2 });
+  const wallH = s * 0.22;
+  g.fillRect(x - s * 0.5, gy - wallH, s, wallH);
+  ruined ? broken(x - s * 0.5, gy - wallH, s) : crenel(x - s * 0.5, gy - wallH, s);
+  const kw = s * 0.3, kh = s * 0.58;
+  g.fillRect(x - kw / 2, gy - kh, kw, kh);
+  if (ruined) broken(x - kw / 2, gy - kh, kw);
+  else {
+    crenel(x - kw / 2, gy - kh, kw);
+    g.beginPath(); g.moveTo(x - kw * 0.2, gy - kh); g.lineTo(x, gy - kh - s * 0.42); g.lineTo(x + kw * 0.2, gy - kh); g.closePath(); g.fill();
+  }
+  for (let i = 0; i < 4; i++) win(x - kw * 0.3 + (i % 2) * kw * 0.5, gy - kh * (0.35 + Math.floor(i / 2) * 0.3), false);
+  win(x - s * 0.015, gy - s * 0.04, true);
+  [-0.5, -0.31, 0.29, 0.48].forEach(off => {
+    const tw = s * (0.07 + r() * 0.045), th = s * (0.42 + r() * 0.4), tx = x + off * s;
+    g.fillRect(tx - tw / 2, gy - th, tw, th);
+    if (ruined && r() < 0.7) broken(tx - tw / 2, gy - th, tw);
+    else if (r() < 0.75) { g.beginPath(); g.moveTo(tx - tw * 0.68, gy - th); g.lineTo(tx, gy - th - s * 0.24); g.lineTo(tx + tw * 0.68, gy - th); g.closePath(); g.fill(); }
+    else crenel(tx - tw / 2 - 1, gy - th, tw + 2);
+    const nw = ruined ? (r() < 0.5 ? 1 : 0) : 1 + Math.floor(r() * 2);
+    for (let k = 0; k < nw; k++) win(tx - s * 0.007, gy - th * (0.3 + k * 0.35 + r() * 0.1), false);
+  });
+  g.strokeStyle = 'rgba(150,170,220,0.10)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(x - s * 0.5, gy - wallH); g.lineTo(x + s * 0.5, gy - wallH); g.stroke();
+}
+
+function geometry() {
+  const gh = Math.min(H * 0.5, W * 0.7);
+  const base = H * 0.8;
+  const iw = gh * 0.56, pw = gh * 0.13;
+  return { gh, base, iw, pw, springY: base - gh * 0.6, archRy: gh * 0.4, stepH: gh * 0.045, mid: W / 2, bowlY: base - gh * 0.17, bowlW: gh * 0.13, bx: iw / 2 + pw + gh * 0.24 };
+}
+function outerPath(p) {
+  const { mid, iw, pw, base, springY, archRy } = G;
+  p.beginPath(); p.moveTo(mid - iw / 2 - pw, base); p.lineTo(mid - iw / 2 - pw, springY);
+  p.ellipse(mid, springY, iw / 2 + pw, archRy, 0, Math.PI, Math.PI * 2); p.lineTo(mid + iw / 2 + pw, base); p.closePath();
+}
+function innerSub(p) {
+  const { mid, iw, pw, base, springY, archRy } = G;
+  p.moveTo(mid - iw / 2, base); p.lineTo(mid - iw / 2, springY);
+  p.ellipse(mid, springY, iw / 2, archRy - pw * 0.75, 0, Math.PI, Math.PI * 2); p.lineTo(mid + iw / 2, base); p.closePath();
+}
+function innerPath(p) { p.beginPath(); innerSub(p); }
+
+function buildStatic() {
+  G = geometry();
+  let g; [skyLayer, g] = layer();
+  const sky = g.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#020309'); sky.addColorStop(0.4, '#0a1024'); sky.addColorStop(0.66, '#211d3d'); sky.addColorStop(1, '#0d0f1c');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  const mr = Math.min(W, H) * 0.045, mx = W * 0.79, my = H * 0.21;
+  moon = { x: mx, y: my, r: mr };
+  const halo = g.createRadialGradient(mx, my, mr, mx, my, mr * 9);
+  halo.addColorStop(0, 'rgba(190,215,255,0.22)'); halo.addColorStop(0.3, 'rgba(140,170,230,0.06)'); halo.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = halo; g.fillRect(0, 0, W, H);
+  const mb = g.createRadialGradient(mx - mr * 0.3, my - mr * 0.3, mr * 0.1, mx, my, mr);
+  mb.addColorStop(0, '#f6f8ff'); mb.addColorStop(1, '#aab8d2');
+  g.fillStyle = mb; g.beginPath(); g.arc(mx, my, mr, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(110,125,160,0.28)';
+  [[0.3, -0.2, 0.22], [-0.35, 0.25, 0.16], [0.1, 0.45, 0.12], [-0.1, -0.45, 0.1]].forEach(([dx, dy, r]) => { g.beginPath(); g.arc(mx + dx * mr, my + dy * mr, r * mr, 0, Math.PI * 2); g.fill(); });
+
+  [mtnLayer, g] = layer();
+  [{ base: 0.56, amp: 0.2, col: '#1e2440' }, { base: 0.64, amp: 0.17, col: '#141a30' }, { base: 0.73, amp: 0.12, col: '#0b0f1e' }].forEach((c, li) => {
+    const pts = ridges[li];
+    g.fillStyle = c.col; g.beginPath(); g.moveTo(0, H);
+    for (let i = 0; i <= 256; i++) g.lineTo(W * i / 256, H * (c.base - pts[i] * c.amp + 0.05));
+    g.lineTo(W, H); g.closePath(); g.fill();
+    const haze = g.createLinearGradient(0, H * (c.base - 0.08), 0, H * (c.base + 0.12));
+    haze.addColorStop(0, 'rgba(70,80,130,0)'); haze.addColorStop(1, 'rgba(70,80,130,0.16)');
+    g.fillStyle = haze; g.fillRect(0, H * (c.base - 0.08), W, H * 0.2);
+    if (li === 0) {
+      // distant ruined towers on the far ridge
+      const rr2 = seeded(31);
+      for (let k = 0; k < 5; k++) {
+        const fx = W * (0.05 + rr2() * 0.9), idx = Math.round(fx / W * 256);
+        const gy = H * (c.base - pts[idx] * c.amp + 0.05) + 2, th = H * (0.03 + rr2() * 0.05), tw = th * 0.22;
+        g.fillStyle = '#1a2038'; g.beginPath(); g.moveTo(fx - tw / 2, gy); g.lineTo(fx - tw / 2, gy - th);
+        g.lineTo(fx - tw * 0.1, gy - th - tw * 0.6); g.lineTo(fx + tw * 0.2, gy - th + tw * 0.2); g.lineTo(fx + tw / 2, gy - th * 0.8); g.lineTo(fx + tw / 2, gy); g.closePath(); g.fill();
+      }
+    }
+    if (li === 1) {
+      windows = [];
+      const s1 = Math.min(W, H) * 0.3, s2 = Math.min(W, H) * 0.2;
+      const groundAt = fx => H * (c.base - pts[Math.max(0, Math.min(256, Math.round(fx / W * 256)))] * c.amp + 0.05);
+      castle(g, W * 0.16, groundAt(W * 0.16) + s1 * 0.04, s1, 11, false);
+      castle(g, W * 0.87, groundAt(W * 0.87) + s2 * 0.04, s2, 23, true);
+    }
+  });
+
+  [gateLayer, g] = layer();
+  const { gh, base, iw, pw, springY, archRy, stepH, mid, bowlY, bowlW, bx } = G;
+  const gr = g.createLinearGradient(0, base - gh * 0.05, 0, H);
+  gr.addColorStop(0, '#0b0e19'); gr.addColorStop(1, '#030409');
+  g.fillStyle = gr; g.beginPath(); g.moveTo(0, base + gh * 0.02);
+  g.quadraticCurveTo(W * 0.25, base - gh * 0.04, mid, base - gh * 0.01);
+  g.quadraticCurveTo(W * 0.75, base - gh * 0.04, W, base + gh * 0.02);
+  g.lineTo(W, H); g.lineTo(0, H); g.closePath(); g.fill();
+  g.save();
+  outerPath(g); innerSub(g);
+  const st = g.createLinearGradient(mid - iw / 2 - pw, 0, mid + iw / 2 + pw, 0);
+  st.addColorStop(0, '#3f475c'); st.addColorStop(0.5, '#252b3b'); st.addColorStop(1, '#151a26');
+  g.fillStyle = st; g.fill('evenodd'); g.clip('evenodd');
+  g.strokeStyle = 'rgba(3,5,10,0.6)'; g.lineWidth = Math.max(1, gh * 0.004);
+  for (let y = base; y > springY; y -= gh * 0.07) { g.beginPath(); g.moveTo(mid - iw / 2 - pw, y); g.lineTo(mid - iw / 2, y); g.moveTo(mid + iw / 2, y); g.lineTo(mid + iw / 2 + pw, y); g.stroke(); }
+  for (let k = 1; k < 13; k++) {
+    const t = Math.PI + k / 13 * Math.PI;
+    g.beginPath(); g.moveTo(mid + Math.cos(t) * iw / 2, springY + Math.sin(t) * (archRy - pw * 0.75));
+    g.lineTo(mid + Math.cos(t) * (iw / 2 + pw), springY + Math.sin(t) * archRy); g.stroke();
+  }
+  g.strokeStyle = 'rgba(180,200,240,0.16)'; g.lineWidth = gh * 0.008; outerPath(g); g.stroke();
+  g.restore();
+  g.fillStyle = '#353e52'; g.beginPath();
+  const ky = springY - archRy;
+  g.moveTo(mid - pw * 0.42, ky - pw * 0.25); g.lineTo(mid + pw * 0.42, ky - pw * 0.25); g.lineTo(mid + pw * 0.28, ky + pw * 0.95); g.lineTo(mid - pw * 0.28, ky + pw * 0.95); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(3,5,10,0.6)'; g.lineWidth = 1.5; g.stroke();
+  g.fillStyle = '#20273a';
+  g.fillRect(mid - iw / 2 - pw * 1.25, base - gh * 0.07, pw * 1.5, gh * 0.07);
+  g.fillRect(mid + iw / 2 - pw * 0.25, base - gh * 0.07, pw * 1.5, gh * 0.07);
+  for (let i = 0; i < 4; i++) {
+    const w = iw + pw * 2 + gh * 0.12 + i * gh * 0.16, y = base + i * stepH;
+    g.fillStyle = i % 2 ? '#1c2334' : '#20283a'; g.fillRect(mid - w / 2, y, w, stepH * 0.35);
+    g.fillStyle = '#0f1320'; g.fillRect(mid - w / 2, y + stepH * 0.35, w, stepH * 0.65);
+  }
+  [-1, 1].forEach(sd => {
+    const x = mid + sd * bx;
+    g.fillStyle = '#12161f';
+    g.fillRect(x - bowlW * 0.08, bowlY, bowlW * 0.16, base - bowlY);
+    g.fillRect(x - bowlW * 0.35, base - gh * 0.015, bowlW * 0.7, gh * 0.02);
+    g.beginPath(); g.moveTo(x - bowlW / 2, bowlY); g.lineTo(x + bowlW / 2, bowlY);
+    g.quadraticCurveTo(x + bowlW * 0.35, bowlY + bowlW * 0.45, x, bowlY + bowlW * 0.42);
+    g.quadraticCurveTo(x - bowlW * 0.35, bowlY + bowlW * 0.45, x - bowlW / 2, bowlY); g.fill();
+    g.strokeStyle = 'rgba(230,182,92,0.35)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x - bowlW / 2, bowlY); g.lineTo(x + bowlW / 2, bowlY); g.stroke();
+  });
+
+  runes = [];
+  const rr = seeded(1234);
+  const addRune = (x, y) => {
+    const segs = [], n = 2 + Math.floor(rr() * 3);
+    for (let i = 0; i < n; i++) segs.push([Math.floor(rr() * 3), Math.floor(rr() * 3), Math.floor(rr() * 3), Math.floor(rr() * 3)]);
+    runes.push({ x, y, segs, ph: rr() * 6.28 });
+  };
+  for (let k = 0; k < 9; k++) { const t = Math.PI + (k + 0.5) / 9 * Math.PI; addRune(mid + Math.cos(t) * (iw / 2 + pw / 2), springY + Math.sin(t) * (archRy - pw * 0.38)); }
+
+  // foreground: colossal hall pillars framing the view
+  [fgLayer, g] = layer();
+  const fpw = Math.max(30, Math.min(110, W * 0.055));
+  [0, W - fpw].forEach((px, side) => {
+    const pg2 = g.createLinearGradient(px, 0, px + fpw, 0);
+    pg2.addColorStop(0, side ? '#0b0d14' : '#05060a'); pg2.addColorStop(0.5, '#0d1018'); pg2.addColorStop(1, side ? '#05060a' : '#0b0d14');
+    g.fillStyle = pg2; g.fillRect(px, 0, fpw, H);
+    g.fillStyle = '#07080d';
+    g.fillRect(px - fpw * 0.18, H * 0.9, fpw * 1.36, H * 0.1);
+    g.fillRect(px - fpw * 0.12, H * 0.88, fpw * 1.24, H * 0.02);
+    g.strokeStyle = 'rgba(0,0,0,0.6)'; g.lineWidth = 1;
+    for (let k = 1; k < 4; k++) { g.beginPath(); g.moveTo(px + fpw * k / 4, 0); g.lineTo(px + fpw * k / 4, H * 0.88); g.stroke(); }
+    const inner = side ? px : px + fpw;
+    const rim = g.createLinearGradient(0, H * 0.3, 0, H);
+    rim.addColorStop(0, 'rgba(103,200,232,0)'); rim.addColorStop(1, 'rgba(103,200,232,0.22)');
+    g.fillStyle = rim; g.fillRect(inner - (side ? 0 : 2), H * 0.3, 2, H * 0.58);
+    g.fillStyle = 'rgba(185,154,87,0.28)';
+    g.fillRect(px, H * 0.18, fpw, 2); g.fillRect(px, H * 0.18 + 6, fpw, 1);
+  });
+
+  // magical motes drifting through the whole view
+  arcane = [];
+  const na = W < 700 ? 22 : 44;
+  for (let i = 0; i < na; i++) arcane.push({ x: Math.random() * W, y: Math.random() * H, vx: rand(-6, 6), vy: -rand(4, 14), r: rand(0.8, 2.2), hue: pick([195, 195, 195, 160, 45]), ph: Math.random() * 6.28 });
+
+  const sr = seeded(42); stars = [];
+  for (let i = 0; i < 220; i++) stars.push({ x: sr() * W, y: Math.pow(sr(), 1.4) * H * 0.62, r: 0.5 + sr() * 1.3, ph: sr() * 6.28, sp: 0.5 + sr() * 2 });
+  fog = [];
+  for (let i = 0; i < 9; i++) fog.push({ x: Math.random(), y: base - gh * 0.25 + Math.random() * gh * 0.45, r: W * (0.18 + Math.random() * 0.22), sp: (Math.random() * 0.006 + 0.003) * (Math.random() < 0.5 ? -1 : 1), near: i > 5 });
+  motes = []; for (let i = 0; i < 180; i++) motes.push(newMote(true));
+  flames = []; embers = [];
+
+  // storm clouds: pre-blurred sprites
+  cloudSprites = [];
+  for (let k = 0; k < 4; k++) {
+    const cw = W * 0.5, chh = H * 0.2;
+    const [c, cg] = layer(cw, chh);
+    try { cg.filter = 'blur(10px)'; } catch (e) {}
+    const r = seeded(500 + k);
+    for (let i = 0; i < 14; i++) {
+      const px = cw * (0.15 + r() * 0.7), py = chh * (0.35 + r() * 0.35), pr = chh * (0.14 + r() * 0.2);
+      cg.fillStyle = `rgba(${18 + r() * 14},${20 + r() * 14},${36 + r() * 16},0.85)`;
+      cg.beginPath(); cg.arc(px, py, pr, 0, 6.28); cg.fill();
+    }
+    cloudSprites.push({ c, w: cw, h: chh });
+  }
+  clouds = [];
+  for (let i = 0; i < 7; i++) clouds.push({ s: i % 4, x: Math.random() * 1.6 - 0.3, y: H * (-0.04 + Math.random() * 0.3), sp: 0.004 + Math.random() * 0.006, sc: 0.8 + Math.random() * 0.8 });
+
+  // the crowd waiting at the gate
+  crowd = [];
+  const n = Math.max(28, Math.min(95, Math.round(W / 16)));
+  const cr = seeded(77);
+  for (let i = 0; i < n; i++) {
+    const depth = Math.pow(cr(), 0.8);
+    const y = base + gh * 0.01 + depth * (H * 0.985 - base - gh * 0.01);
+    const h = gh * 0.12 * (0.75 + depth * 1.1);
+    let x = cr() * W;
+    crowd.push({
+      x, y, h, type: Math.floor(cr() * 6), dir: cr() < 0.5 ? -1 : 1,
+      jump: cr() < 0.18, jp: 1.2 + cr() * 2.5, ph: cr() * 10,
+      sway: cr() * 6.28, name: cr() < 0.22 ? genName() : null, tint: Math.floor(cr() * NAME_COLORS.length)
+    });
+  }
+  crowd.sort((a, b) => a.y - b.y);
+  bubbles = [];
+}
+function newMote(initial) { return { a: Math.random() * 6.28, r: initial ? Math.random() : 1, sp: 0.25 + Math.random() * 0.6, hue: 175 + Math.random() * 95, s: 0.6 + Math.random() * 1.8 }; }
+
+function resize() {
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = Math.ceil(W * RS); cv.height = Math.ceil(H * RS);
+  cx.setTransform(RS, 0, 0, RS, 0, 0);
+  buildStatic();
+}
+
+function drawClouds(t) {
+  for (const c of clouds) {
+    const sp = cloudSprites[c.s];
+    const w = sp.w * c.sc, h = sp.h * c.sc;
+    const x = (((c.x + t * c.sp * MOTION) % 1.8) + 1.8) % 1.8 * W - W * 0.4;
+    cx.drawImage(sp.c, x, c.y, w, h);
+  }
+}
+function drawFog(t, near) {
+  for (const f of fog) {
+    if (f.near !== near) continue;
+    const x = ((f.x + t * f.sp * MOTION) % 1.4 + 1.4) % 1.4 * W - W * 0.2;
+    const gfog = cx.createRadialGradient(x, f.y, 0, x, f.y, f.r);
+    const a = near ? 0.07 : 0.05;
+    gfog.addColorStop(0, `rgba(140,160,205,${a})`); gfog.addColorStop(1, 'rgba(140,160,205,0)');
+    cx.fillStyle = gfog; cx.fillRect(x - f.r, f.y - f.r, f.r * 2, f.r * 2);
+  }
+}
+function makeBolt() {
+  const paths = [];
+  const trunk = []; let x = rand(W * 0.08, W * 0.92), y = 0; const yEnd = H * rand(0.42, 0.56);
+  trunk.push([x, y]);
+  while (y < yEnd) { y += rand(H * 0.015, H * 0.045); x += rand(-1, 1) * W * 0.025; trunk.push([x, y]); }
+  paths.push({ pts: trunk, w: 2.4 });
+  for (let b = 0; b < 3; b++) {
+    const s = trunk[randInt(2, trunk.length - 3)]; if (!s) continue;
+    const br = [[s[0], s[1]]]; let bx = s[0], by = s[1]; const dir = Math.random() < 0.5 ? -1 : 1;
+    for (let i = 0; i < randInt(3, 7); i++) { by += rand(H * 0.01, H * 0.03); bx += dir * rand(0, 1) * W * 0.02; br.push([bx, by]); }
+    paths.push({ pts: br, w: 1.2 });
+  }
+  return paths;
+}
+// distant storm light: a slow glow inside the clouds, never a strobe
+function drawStorm(t) {
+  if (!reduceMotion && t > nextStorm) {
+    storm = { born: t, x: rand(0.1, 0.9) * W, y: rand(0.04, 0.22) * H, r: W * rand(0.18, 0.3) };
+    nextStorm = t + rand(18, 40);
+  }
+  if (!storm) return;
+  const age = t - storm.born;
+  if (age > 2.4) { storm = null; return; }
+  const e = (age < 0.3 ? age / 0.3 : Math.exp(-(age - 0.3) * 2)) + (age > 0.7 && age < 1.5 ? 0.35 * Math.sin((age - 0.7) / 0.8 * Math.PI) : 0);
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  const sg = cx.createRadialGradient(storm.x, storm.y, 0, storm.x, storm.y, storm.r);
+  sg.addColorStop(0, `rgba(150,165,235,${0.2 * e})`); sg.addColorStop(1, 'rgba(150,165,235,0)');
+  cx.fillStyle = sg; cx.fillRect(storm.x - storm.r, storm.y - storm.r, storm.r * 2, storm.r * 2);
+  cx.restore();
+}
+function drawRays(t) {
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  for (let k = 0; k < 3; k++) {
+    const a = 0.009 + 0.006 * Math.sin(t * 0.13 * MOTION + k * 2.1);
+    const ang = Math.PI * (0.68 + k * 0.05), len = H * 1.25, spread = H * (0.1 + k * 0.05);
+    const ex = moon.x + Math.cos(ang) * len, ey = moon.y + Math.sin(ang) * len;
+    const nx = -Math.sin(ang), ny = Math.cos(ang);
+    const rg = cx.createLinearGradient(moon.x, moon.y, ex, ey);
+    rg.addColorStop(0, `rgba(190,210,255,${a * 1.6})`); rg.addColorStop(1, 'rgba(190,210,255,0)');
+    cx.fillStyle = rg; cx.beginPath();
+    cx.moveTo(moon.x + nx * moon.r * 0.6, moon.y + ny * moon.r * 0.6); cx.lineTo(moon.x - nx * moon.r * 0.6, moon.y - ny * moon.r * 0.6);
+    cx.lineTo(ex - nx * spread, ey - ny * spread); cx.lineTo(ex + nx * spread, ey + ny * spread); cx.closePath(); cx.fill();
+  }
+  cx.restore();
+}
+function drawWindows(t) {
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  cx.shadowColor = 'rgba(255,160,70,0.9)'; cx.shadowBlur = 8;
+  for (const w of windows) {
+    const a = 0.55 + 0.3 * Math.sin(t * w.sp * MOTION + w.ph) + Math.random() * 0.06;
+    cx.fillStyle = `rgba(255,${185 + (w.ph * 10 | 0) % 30},105,${a})`;
+    cx.fillRect(w.x, w.y, w.w, w.h);
+  }
+  cx.restore();
+}
+function drawBanners(t) {
+  const { mid, iw, pw, springY, gh } = G;
+  [-1, 1].forEach((sd, i) => {
+    const x0 = mid + sd * (iw / 2 + pw / 2), bw = pw * 0.78, top = springY + gh * 0.03, len = gh * 0.4;
+    const sway = Math.sin(t * 0.55 * MOTION + i * 1.7) * bw * 0.09;
+    const g2 = cx.createLinearGradient(x0 - bw / 2, 0, x0 + bw / 2, 0);
+    g2.addColorStop(0, '#3e1217'); g2.addColorStop(0.45, '#7a2c33'); g2.addColorStop(0.55, '#6c252c'); g2.addColorStop(1, '#3a1015');
+    cx.fillStyle = g2; cx.beginPath();
+    cx.moveTo(x0 - bw / 2, top); cx.lineTo(x0 + bw / 2, top);
+    cx.lineTo(x0 + bw / 2 + sway, top + len); cx.lineTo(x0 + sway, top + len - bw * 0.38); cx.lineTo(x0 - bw / 2 + sway, top + len);
+    cx.closePath(); cx.fill();
+    cx.strokeStyle = 'rgba(229,199,122,0.75)'; cx.lineWidth = Math.max(1, bw * 0.035); cx.stroke();
+    cx.fillStyle = '#B99A57'; cx.fillRect(x0 - bw * 0.62, top - bw * 0.06, bw * 1.24, bw * 0.1);
+    const ex = x0 + sway * 0.45, ey = top + len * 0.4, es = bw * 0.24;
+    cx.beginPath(); cx.moveTo(ex, ey - es); cx.lineTo(ex + es * 0.75, ey); cx.lineTo(ex, ey + es); cx.lineTo(ex - es * 0.75, ey); cx.closePath();
+    cx.strokeStyle = '#E5C77A'; cx.lineWidth = Math.max(1, bw * 0.04); cx.stroke();
+    cx.save(); cx.globalCompositeOperation = 'lighter';
+    cx.fillStyle = `rgba(103,200,232,${0.45 + 0.2 * Math.sin(t * 0.8 + i)})`;
+    cx.beginPath(); cx.arc(ex, ey, es * 0.28, 0, 6.28); cx.fill(); cx.restore();
+  });
+}
+function drawArcane(t, dt) {
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  for (const m of arcane) {
+    m.x += (m.vx + Math.sin(t * 0.4 + m.ph) * 5) * dt * MOTION; m.y += m.vy * dt * MOTION;
+    if (m.y < -10) { m.y = H + 10; m.x = Math.random() * W; }
+    if (m.x < -10) m.x = W + 10; else if (m.x > W + 10) m.x = -10;
+    const a = 0.25 + 0.45 * (0.5 + 0.5 * Math.sin(t * 1.3 + m.ph));
+    const gr2 = cx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 4);
+    gr2.addColorStop(0, `hsla(${m.hue},85%,72%,${a})`); gr2.addColorStop(1, `hsla(${m.hue},85%,60%,0)`);
+    cx.fillStyle = gr2; cx.fillRect(m.x - m.r * 4, m.y - m.r * 4, m.r * 8, m.r * 8);
+  }
+  cx.restore();
+}
+
+function drawPortal(t, dt) {
+  const { mid, iw, base, springY, archRy, pw, gh } = G;
+  const top = springY - (archRy - pw * 0.75);
+  const pcy = (top + base) / 2 + gh * 0.02, rx = iw * 0.5, ry = (base - top) * 0.5;
+  cx.save(); innerPath(cx); cx.clip();
+  const pulse = 0.5 + 0.5 * Math.sin(t * 0.7);
+  const pg = cx.createRadialGradient(mid, pcy, 0, mid, pcy, Math.max(rx, ry) * 1.1);
+  pg.addColorStop(0, `rgba(210,255,250,${0.55 + pulse * 0.2})`); pg.addColorStop(0.25, 'rgba(90,210,220,0.55)');
+  pg.addColorStop(0.6, 'rgba(70,60,160,0.55)'); pg.addColorStop(1, 'rgba(20,15,50,0.9)');
+  cx.fillStyle = '#0b0a20'; cx.fillRect(mid - rx - 2, top - 2, rx * 2 + 4, base - top + 4);
+  cx.fillStyle = pg; cx.fillRect(mid - rx - 2, top - 2, rx * 2 + 4, base - top + 4);
+  cx.globalCompositeOperation = 'lighter';
+  cx.lineWidth = gh * 0.012;
+  for (let k = 0; k < 4; k++) {
+    cx.beginPath();
+    for (let s = 0; s < 40; s++) {
+      const r = s / 40, a = t * 0.6 * MOTION + k * Math.PI / 2 + r * 4.5;
+      const x = mid + Math.cos(a) * r * rx * 0.95, y = pcy + Math.sin(a) * r * ry * 0.95;
+      s ? cx.lineTo(x, y) : cx.moveTo(x, y);
+    }
+    cx.strokeStyle = 'rgba(140,240,255,0.07)'; cx.stroke();
+  }
+  for (const m of motes) {
+    m.a += m.sp * dt * (1.6 - m.r) * MOTION; m.r -= dt * 0.035 * m.sp * MOTION;
+    if (m.r < 0.03) Object.assign(m, newMote(false));
+    cx.fillStyle = `hsla(${m.hue},90%,72%,${0.25 + (1 - m.r) * 0.6})`;
+    cx.beginPath(); cx.arc(mid + Math.cos(m.a) * m.r * rx, pcy + Math.sin(m.a) * m.r * ry, m.s, 0, 6.28); cx.fill();
+  }
+  cx.restore();
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  const og = cx.createRadialGradient(mid, base, 0, mid, base, iw * 1.3);
+  og.addColorStop(0, `rgba(90,200,220,${0.17 + pulse * 0.06})`); og.addColorStop(1, 'rgba(90,200,220,0)');
+  cx.fillStyle = og; cx.fillRect(mid - iw * 1.3, base - iw * 0.6, iw * 2.6, iw * 1.4);
+  // a faint shaft of arcane light rising from the gate
+  const sh = cx.createLinearGradient(0, top, 0, 0);
+  sh.addColorStop(0, `rgba(103,200,232,${0.07 + pulse * 0.03})`); sh.addColorStop(1, 'rgba(103,200,232,0)');
+  cx.fillStyle = sh; cx.beginPath();
+  cx.moveTo(mid - iw * 0.22, top + gh * 0.05); cx.lineTo(mid + iw * 0.22, top + gh * 0.05);
+  cx.lineTo(mid + iw * 0.5, 0); cx.lineTo(mid - iw * 0.5, 0); cx.closePath(); cx.fill();
+  cx.restore();
+}
+function drawRunes(t) {
+  const s = G.pw * 0.2;
+  cx.save(); cx.lineCap = 'round'; cx.lineWidth = Math.max(1, G.gh * 0.0042);
+  cx.shadowColor = 'rgba(126,240,230,0.9)'; cx.shadowBlur = 10;
+  for (const r of runes) {
+    const a = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.9 * MOTION + r.ph));
+    cx.strokeStyle = `rgba(150,250,240,${a})`; cx.beginPath();
+    for (const [x1, y1, x2, y2] of r.segs) {
+      cx.moveTo(r.x + (x1 - 1) * s, r.y + (y1 - 1) * s);
+      cx.lineTo(r.x + (x2 - 1) * s + (x1 === x2 && y1 === y2 ? s : 0), r.y + (y2 - 1) * s);
+    }
+    cx.stroke();
+  }
+  cx.restore();
+}
+function drawFire(t, dt) {
+  const { mid, bx, bowlY, bowlW, gh } = G;
+  cx.save(); cx.globalCompositeOperation = 'lighter';
+  [-1, 1].forEach((sd, i) => {
+    const x = mid + sd * bx;
+    const flick = 0.75 + 0.25 * Math.sin(t * 9 + i) * Math.sin(t * 5.3 + i * 2) + Math.random() * 0.08;
+    const lg = cx.createRadialGradient(x, bowlY, 0, x, bowlY, gh * 0.5);
+    lg.addColorStop(0, `rgba(255,150,60,${0.3 * flick})`); lg.addColorStop(1, 'rgba(255,120,40,0)');
+    cx.fillStyle = lg; cx.fillRect(x - gh * 0.5, bowlY - gh * 0.5, gh, gh);
+    const n = Math.round(4 * Math.max(0.5, MOTION));
+    for (let k = 0; k < n; k++) flames.push({ x: x + rand(-0.3, 0.3) * bowlW, cxp: x, y: bowlY, vx: rand(-0.02, 0.02) * gh, vy: -rand(0.18, 0.4) * gh, life: 0, max: rand(0.5, 0.95), s: rand(0.022, 0.04) * gh });
+    if (Math.random() < 0.08 * MOTION) embers.push({ x: x + rand(-0.2, 0.2) * bowlW, y: bowlY - gh * 0.05, vx: rand(-0.03, 0.03) * gh, vy: -rand(0.08, 0.16) * gh, life: 0, max: rand(3, 6), ph: Math.random() * 6 });
+  });
+  for (let i = flames.length - 1; i >= 0; i--) {
+    const f = flames[i]; f.life += dt;
+    if (f.life > f.max) { flames.splice(i, 1); continue; }
+    const k = f.life / f.max;
+    f.x += f.vx * dt + (f.cxp - f.x) * dt * 2.5; f.y += f.vy * dt * MOTION;
+    cx.fillStyle = `hsla(${45 - k * 35},100%,${62 - k * 22}%,${0.32 * (1 - k)})`;
+    cx.beginPath(); cx.arc(f.x, f.y, f.s * (1 - k * 0.6), 0, 6.28); cx.fill();
+  }
+  for (let i = embers.length - 1; i >= 0; i--) {
+    const e = embers[i]; e.life += dt;
+    if (e.life > e.max || e.y < 0) { embers.splice(i, 1); continue; }
+    e.x += (e.vx + Math.sin(t * 1.5 + e.ph) * gh * 0.03) * dt; e.y += e.vy * dt * MOTION;
+    cx.fillStyle = `rgba(255,${150 + Math.random() * 60},70,${0.9 * (1 - e.life / e.max)})`;
+    cx.fillRect(e.x, e.y, 1.8, 1.8);
+  }
+  cx.restore();
+}
+
+function drawFigure(f, t) {
+  const { h } = f;
+  let off = 0;
+  if (f.jump) {
+    const p = ((t * MOTION + f.ph) % f.jp);
+    if (p < 0.55) off = Math.sin(p / 0.55 * Math.PI) * h * 0.32;
+  }
+  const x = f.x + Math.sin(t * 0.5 + f.sway) * h * 0.02, y = f.y - off;
+  const sw = h * 0.3, fw = h * 0.24, bodyTop = y - h * 0.64;
+  cx.fillStyle = '#05060b';
+  // legs / robe
+  cx.beginPath();
+  if (f.type === 0 || f.type === 3) { cx.moveTo(x - sw / 2, bodyTop); cx.lineTo(x + sw / 2, bodyTop); cx.lineTo(x + fw * 0.75, y); cx.lineTo(x - fw * 0.75, y); }
+  else { cx.moveTo(x - sw / 2, bodyTop); cx.lineTo(x + sw / 2, bodyTop); cx.lineTo(x + fw / 2, y - h * 0.3); cx.lineTo(x + fw / 2, y); cx.lineTo(x + h * 0.02, y); cx.lineTo(x, y - h * 0.24); cx.lineTo(x - h * 0.02, y); cx.lineTo(x - fw / 2, y); cx.lineTo(x - fw / 2, y - h * 0.3); }
+  cx.closePath(); cx.fill();
+  // head
+  const hy = y - h * 0.74, hr = h * 0.095;
+  cx.beginPath(); cx.arc(x, hy, hr, 0, 6.28); cx.fill();
+  if (f.type === 1 || f.type === 4) { // big shoulder pads
+    cx.beginPath(); cx.ellipse(x - sw * 0.55, bodyTop + h * 0.02, h * 0.1, h * 0.07, 0, 0, 6.28); cx.ellipse(x + sw * 0.55, bodyTop + h * 0.02, h * 0.1, h * 0.07, 0, 0, 6.28); cx.fill();
+  }
+  if (f.type === 2) { // staff with a glowing tip
+    const sx = x + f.dir * sw * 0.7;
+    cx.fillRect(sx - h * 0.012, y - h * 1.05, h * 0.024, h * 1.05);
+    cx.save(); cx.globalCompositeOperation = 'lighter';
+    cx.fillStyle = `${NAME_COLORS[f.tint]}aa`; cx.beginPath(); cx.arc(sx, y - h * 1.06, h * 0.035, 0, 6.28); cx.fill();
+    cx.restore(); cx.fillStyle = '#05060b';
+  }
+  if (f.type === 3) { // pointed hat
+    cx.beginPath(); cx.moveTo(x - hr * 1.8, hy - hr * 0.3); cx.lineTo(x + hr * 1.8, hy - hr * 0.3); cx.lineTo(x + f.dir * hr * 1.2, hy - h * 0.34); cx.closePath(); cx.fill();
+  }
+  if (f.type === 4) { // horned helm
+    cx.lineWidth = h * 0.03; cx.strokeStyle = '#05060b'; cx.beginPath();
+    cx.moveTo(x - hr, hy - hr * 0.2); cx.quadraticCurveTo(x - hr * 2.2, hy - hr * 0.6, x - hr * 1.8, hy - hr * 2);
+    cx.moveTo(x + hr, hy - hr * 0.2); cx.quadraticCurveTo(x + hr * 2.2, hy - hr * 0.6, x + hr * 1.8, hy - hr * 2); cx.stroke();
+  }
+  if (f.type === 5) { // sword on back
+    cx.lineWidth = h * 0.035; cx.strokeStyle = '#05060b'; cx.beginPath();
+    cx.moveTo(x - f.dir * sw * 0.6, y - h * 0.25); cx.lineTo(x + f.dir * sw * 0.7, y - h * 0.98); cx.stroke();
+  }
+  // faint portal rim light
+  cx.save(); cx.globalCompositeOperation = 'lighter'; cx.strokeStyle = 'rgba(90,200,220,0.16)'; cx.lineWidth = 1;
+  cx.beginPath(); cx.arc(x, hy, hr, -2.4, -0.7); cx.stroke(); cx.restore();
+  return { x, top: y - h * (f.type === 2 ? 1.12 : f.type === 3 ? 1.08 : 0.86) };
+}
+function drawCrowd(t) {
+  const heads = new Map();
+  for (const f of crowd) heads.set(f, drawFigure(f, t));
+  cx.save(); cx.textAlign = 'center'; cx.textBaseline = 'bottom';
+  for (const f of crowd) {
+    if (!f.name) continue;
+    const p = heads.get(f), fs = Math.max(10, Math.min(15, f.h * 0.15));
+    cx.font = `700 ${fs}px "Alegreya Sans", sans-serif`;
+    cx.lineWidth = 3; cx.strokeStyle = 'rgba(0,0,0,0.85)'; cx.strokeText(f.name, p.x, p.top - 2);
+    cx.fillStyle = NAME_COLORS[f.tint]; cx.fillText(f.name, p.x, p.top - 2);
+  }
+  const now = performance.now();
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const b = bubbles[i];
+    if (now > b.until) { bubbles.splice(i, 1); continue; }
+    const p = heads.get(b.f); if (!p) continue;
+    const fs = 13; cx.font = `500 ${fs}px "Alegreya Sans", sans-serif`;
+    const tw = Math.min(cx.measureText(b.text).width, 220) + 14;
+    const bx = Math.max(4, Math.min(W - tw - 4, p.x - tw / 2)), by = p.top - (b.f.name ? 20 : 6) - fs - 10;
+    cx.fillStyle = 'rgba(245,240,225,0.92)';
+    cx.beginPath(); cx.roundRect ? cx.roundRect(bx, by, tw, fs + 10, 6) : cx.rect(bx, by, tw, fs + 10); cx.fill();
+    cx.beginPath(); cx.moveTo(p.x - 5, by + fs + 10); cx.lineTo(p.x + 5, by + fs + 10); cx.lineTo(p.x, by + fs + 16); cx.fill();
+    cx.fillStyle = '#1a1308'; cx.textAlign = 'left';
+    cx.fillText(b.text.length > 38 ? b.text.slice(0, 36) + '…' : b.text, bx + 7, by + fs + 6);
+    cx.textAlign = 'center';
+  }
+  cx.restore();
+}
+function sayBubble(text) {
+  const near = crowd.filter(f => f.h > G.gh * 0.1);
+  if (!near.length) return;
+  const f = pick(near);
+  if (bubbles.some(b => b.f === f) || bubbles.length > 2) return;
+  bubbles.push({ f, text, until: performance.now() + 4500 });
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  const t = now / 1000;
+  cx.drawImage(skyLayer, 0, 0, W, H);
+  for (const s of stars) { cx.fillStyle = `rgba(220,230,255,${0.2 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.sp * MOTION + s.ph))})`; cx.fillRect(s.x, s.y, s.r, s.r); }
+  drawClouds(t);
+  drawStorm(t);
+  drawRays(t);
+  drawFog(t, false);
+  cx.drawImage(mtnLayer, 0, 0, W, H);
+  drawWindows(t);
+  drawPortal(t, dt);
+  cx.drawImage(gateLayer, 0, 0, W, H);
+  drawRunes(t);
+  drawBanners(t);
+  drawFire(t, dt);
+  drawCrowd(t);
+  drawFog(t, true);
+  cx.drawImage(fgLayer, 0, 0, W, H);
+  drawArcane(t, dt);
+  requestAnimationFrame(frame);
+}
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(frame);
+
+/* =========================== REALMS =========================== */
+const REALMS = [
+  { name: 'Silverhollow', type: 'Normal', pop: 'Full', q: [12000, 31000] },
+  { name: 'Emberreach', type: 'PvP', pop: 'Full', q: [18000, 46000] },
+  { name: 'Thornwake', type: 'Roleplaying', pop: 'Full', q: [6000, 15000] },
+  { name: 'Lanternfall', type: 'RP-PvP', pop: 'High', q: [900, 3800] },
+  { name: 'The Quiet Shore', type: 'Normal', pop: 'Full', q: [24000, 52000] },
+  { name: 'Duskmere', type: 'Normal', pop: 'Locked' },
+  { name: 'Gloamspire', type: 'PvP', pop: 'Offline' },
+  { name: 'Stormvale', type: 'Normal', pop: 'Full', q: [9000, 22000] }
+];
+const NEW_REALMS = ['Ashenmoor', 'Brightwater', 'Cindervale', 'Frostmantle', 'Hollowmere', 'Ironwake', 'Mistral Reach', 'Sunken Crown', 'Old Kestrel', 'Saltmarch', 'Wyvernfell', 'Glasswood'];
+let realm = REALMS.find(r => r.name === store.get('realm', 'Silverhollow')) || REALMS[0];
+$('realmName').textContent = realm.name;
+function addRealm() {
+  const name = NEW_REALMS.find(n => !REALMS.some(r => r.name === n));
+  if (!name) return null;
+  const r = { name, type: pick(['Normal', 'PvP', 'Roleplaying']), pop: 'New', q: [20, 200], born: Date.now() };
+  REALMS.push(r);
+  return r;
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const r of REALMS) {
+    if (!r.born) continue;
+    const age = (now - r.born) / 1000;
+    if (age > 45) { r.pop = 'Full'; r.q = [9000, 28000]; }
+    else if (age > 28) { r.pop = 'High'; r.q = [2500, 7000]; }
+    else if (age > 12) { r.pop = 'Medium'; r.q = [300, 1500]; }
+  }
+  // Gloamspire flickers on and off
+  const gl = REALMS.find(r => r.name === 'Gloamspire');
+  if (Math.random() < 0.08) { gl.pop = gl.pop === 'Offline' ? 'Full' : 'Offline'; gl.q = [30000, 60000]; }
+}, 3000);
+
+/* =========================== NEWS + CHAT FEEDS =========================== */
+const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+let compDays = 1;
+const NEWS = [
+  () => 'We are aware some players cannot log in. Engineers are investigating.',
+  () => 'Additional login servers are being brought online.',
+  () => { const r = addRealm(); return r ? [`New realm <b>${r.name}</b> (${r.type}) is now open. Population: Low.`, `Moments later: ${r.name} population is Full.`] : 'We are not adding more realms. We have run out of names.'; },
+  () => { const a = pick(REALMS).name, b = pick(REALMS).name; return a === b ? `${a} is restarting. Expect 15 minutes of downtime.` : `${a} and ${b} are restarting. Expect 15 minutes of downtime.`; },
+  () => 'Queue times are higher than expected. Thank you for your patience.',
+  () => { const s = compDays === 1 ? 'Compensation: all accounts will receive 1 free day of game time.' : `Update: compensation increased to ${compDays} days.`; compDays += randInt(1, 2); return s; },
+  () => `Free character transfers off ${pick(REALMS).name} are now open. Every destination realm is full.`,
+  () => 'The authentication service has been restarted. Please try logging in again.',
+  () => 'Hotfix 4.2.7c is live. A client restart is not required. (It is.)',
+  () => 'Please avoid clicking Log In repeatedly. It does not help.',
+  () => 'We have identified the cause of the login issues: everyone is trying to log in.',
+  () => 'The account website is experiencing high traffic.',
+  () => 'Login servers are stable. (Update: login servers are not stable.)',
+  () => 'Thank you for an incredible launch. We are reading your feedback. All of it.'
+];
+const feed = $('feed'), ticker = $('ticker');
+function setTicker(html) { ticker.innerHTML = html; }
+function postNews(text, alert) {
+  const items = Array.isArray(text) ? text : [text];
+  items.forEach((x, i) => setTimeout(() => {
+    const d = document.createElement('div');
+    d.className = 'item' + (alert || i > 0 ? ' alert' : '');
+    d.innerHTML = `<time>${hhmm()}</time>${x}`;
+    feed.prepend(d);
+    while (feed.children.length > 10) feed.lastChild.remove();
+    setTicker(`<b>News:</b> ${x}`);
+  }, i * 9000));
+}
+let newsOrder = [];
+function nextNews() {
+  if (!newsOrder.length) newsOrder = NEWS.map((_, i) => i).sort(() => Math.random() - 0.5);
+  postNews(NEWS[newsOrder.pop()]());
+  setTimeout(nextNews, rand(35000, 75000));
+}
+postNews('World of Quecraft is live! Thank you for joining us on launch day.');
+setTimeout(() => postNews('We are seeing very high demand. Realm queues are in effect.', true), 600);
+setTimeout(() => postNews(NEWS[0](), true), 1200);
+setTimeout(nextNews, 20000);
+
+// the crowd outside the gate still grumbles in speech bubbles
+(function crowdTalk() { if (Math.random() < 0.6) sayBubble(pick(CHAT)); setTimeout(crowdTalk, rand(4000, 9000)); })();
+
+/* =========================== LOGIN FLOW =========================== */
+let flow = 0;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const dlg = $('dlg'), box = $('dlgBox');
+let lastFocus = null;
+const ORN = ['tl', 'tr', 'bl', 'br'].map(c => `<span class="orn ${c}" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#corner"/></svg></span>`).join('');
+const FLOURISH = '<svg class="flourish" viewBox="0 0 240 16" aria-hidden="true"><use href="#flourish"/></svg>';
+function openDialog(html, wide) {
+  if (dlg.hidden) lastFocus = document.activeElement;
+  box.className = 'dlg-box panel' + (wide ? ' wide' : '');
+  box.innerHTML = ORN + html;
+  const title = box.querySelector('.dlg-title'); if (title) title.insertAdjacentHTML('afterend', FLOURISH);
+  dlg.hidden = false;
+  const b = box.querySelector('.dlg-btns .btn, [tabindex]'); if (b) b.focus();
+}
+function closeDialog() { dlg.hidden = true; box.innerHTML = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+const buttons = list => '<div class="dlg-btns">' + list.map((b, i) => `<button class="btn${b.p ? ' primary' : ''}" type="button" data-i="${i}">${b.t}</button>`).join('') + '</div>';
+function bindButtons(list) { box.querySelectorAll('.dlg-btns .btn').forEach(el => el.addEventListener('click', () => (list[+el.dataset.i].fn || closeDialog)())); }
+function setStatus(text, cls) { $('statusTxt').textContent = text; $('statusOrb').className = 'orb ' + cls; }
+const STATUSES = [['Overloaded', 'busy'], ['Overloaded', 'busy'], ['Busy', 'busy'], ['Unstable', 'warn'], ['Restarting', 'down'], ['Online (briefly)', 'ok']];
+(function statusLoop() { if (dlg.hidden) setStatus(...pick(STATUSES)); setTimeout(statusLoop, rand(7000, 16000)); })();
+function message(title, text, list = [{ t: 'Okay', p: true }], small) {
+  openDialog(`<p class="dlg-title" id="dlgTitle">${title}</p>${text ? `<p class="dlg-text">${text}</p>` : ''}${small ? `<p class="dlg-text small">${small}</p>` : ''}${buttons(list)}`);
+  bindButtons(list);
+}
+function waiting(title, small) {
+  const list = [{ t: 'Cancel', fn: () => { flow++; closeDialog(); } }];
+  openDialog(`<p class="dlg-title" id="dlgTitle">${title}</p>${small ? `<p class="dlg-text small">${small}</p>` : ''}<div class="spinner" aria-hidden="true"></div>${buttons(list)}`);
+  bindButtons(list);
+}
+const ERRORS = [
+  ['Disconnected', 'You have been disconnected from the server.', 'Code AF-1047'],
+  ['Unable to connect', 'The login service is not responding. Please try again in a few minutes.', 'Code AF-3003'],
+  ['Login servers busy', 'The login servers are currently busy. Please wait a moment and try again.', 'Code AF-2210'],
+  ['Authentication timed out', 'The authentication server took too long to respond.', 'Code AF-4408'],
+  ['Session expired', 'Your session has timed out. Please log in again.', 'Code AF-4401'],
+  ['Too many login attempts', 'Too many players are logging in. Please wait before trying again.', 'Code AF-4290'],
+  ['Unknown error', 'An unknown error occurred.', 'Code AF-0000. Nobody knows.']
+];
+function fail(err, extra) {
+  const [t, x, c] = err || pick(ERRORS);
+  setStatus(pick(['Unstable', 'Overloaded', 'Restarting']), pick(['warn', 'busy', 'down']));
+  message(t, x, extra || [{ t: 'Okay', p: true, fn: () => { closeDialog(); $('loginBtn').focus(); } }], c);
+}
+
+async function patch(tok) {
+  const list = [{ t: 'Cancel', fn: () => { flow++; closeDialog(); } }];
+  openDialog(`<p class="dlg-title" id="dlgTitle">Updating World of Quecraft</p><p class="dlg-text small" id="pTxt">Downloading patch 4.2.7c (1 of 1)</p><div class="bar"><i id="pBar"></i></div><p class="dlg-text small" id="pSpd">&nbsp;</p>${buttons(list)}`);
+  bindButtons(list);
+  for (let tries = 0; ; tries++) {
+    let p = 0;
+    const size = 812.4;
+    while (p < 99) {
+      await wait(200); if (tok !== flow) return false;
+      p = Math.min(99, p + (p > 90 ? rand(0.02, 0.4) : rand(0.4, 3.2)));
+      const bar = $('pBar'), sp = $('pSpd'); if (!bar) return false;
+      bar.style.width = p + '%';
+      sp.textContent = `${p.toFixed(1)}%  (${(size * p / 100).toFixed(1)} MB of ${size} MB) at ${randInt(12, 480)} KB/s`;
+    }
+    $('pSpd').textContent = '99.0%  Finalizing…';
+    await wait(rand(4000, 9000)); if (tok !== flow) return false;
+    if (tries === 0 && Math.random() < 0.65) {
+      $('pTxt').textContent = 'Patch failed: a file is in use by another program. Restarting download.';
+      earn('patch-fail');
+      await wait(2600); if (tok !== flow) return false;
+      $('pTxt').textContent = 'Downloading patch 4.2.7c (1 of 1), attempt 2';
+      continue;
+    }
+    break;
+  }
+  store.set('patched', Date.now());
+  return true;
+}
+
+async function login(e) {
+  if (e) e.preventDefault();
+  const acct = $('acct').value.trim(), pw = $('pw').value;
+  const invalid = (id, msg) => {
+    const el = $(id), wrap = el.closest('.field');
+    el.setAttribute('aria-invalid', 'true'); $(id + 'Err').textContent = msg;
+    wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
+    el.focus();
+  };
+  if (!acct) return invalid('acct', 'Please enter your account name.');
+  if (!pw) return invalid('pw', 'Please enter your password.');
+  store.set('acct', $('remember').checked ? acct : '');
+  const lb = $('loginBtn'); lb.classList.remove('ok'); void lb.offsetWidth; lb.classList.add('ok');
+  const tok = ++flow;
+  bump('logins');
+  if (!store.get('patched', 0) || Math.random() < 0.15) { if (!(await patch(tok))) return; }
+  waiting('Connecting'); await wait(rand(1000, 2600)); if (tok !== flow) return;
+  if (Math.random() < 0.35) {
+    for (let a = 2; a <= randInt(2, 5); a++) {
+      waiting('Connecting', `Login server busy. Retrying (attempt ${a} of 5)`);
+      await wait(rand(1800, 3500)); if (tok !== flow) return;
+    }
+  }
+  waiting('Authenticating'); await wait(rand(1200, 4500)); if (tok !== flow) return;
+  waiting('Retrieving realm list'); await wait(rand(900, 2500)); if (tok !== flow) return;
+  const roll = Math.random();
+  if (roll < 0.06) return fail(['Incorrect password', 'The account name or password you entered is incorrect.', 'Code AF-0104. It was definitely correct.']);
+  if (roll < 0.22) return fail();
+  joinRealm(realm, tok);
+}
+function joinRealm(r, tok) {
+  if (r.pop === 'Offline') return fail(['Realm offline', `${r.name} is currently offline. Please choose another realm.`, 'Code AF-6600']);
+  if (r.pop === 'Locked') return fail(['Realm locked', `${r.name} is locked while the population settles. Please choose another realm.`, 'Code AF-6620']);
+  queue(r, tok);
+}
+function fmtEta(pos) {
+  if (Math.random() < 0.07) return 'Unknown';
+  const m = Math.max(1, Math.round(pos / 140 * pick([1, 1, 1, 1, 0.3, 0.5, 2.2, 4.5, 9])));
+  if (pos < 40) return 'less than 1 min';
+  if (m < 60) return m + ' min';
+  return Math.floor(m / 60) + ' hr ' + (m % 60) + ' min';
+}
+function queue(r, tok, startPos) {
+  let pos = startPos || randInt(r.q[0], r.q[1]);
+  let end = Math.random() < 0.55 ? 1 : randInt(2, Math.max(3, Math.floor(pos * 0.5)));
+  if (end >= pos) end = 1;
+  bump('queues');
+  if (r.born) earn('new-realm');
+  const list = [
+    { t: 'Change Realm', fn: () => { flow++; realmList(); } },
+    { t: 'Leave Queue', fn: () => { flow++; closeDialog(); } }
+  ];
+  const full = r.pop === 'Full' ? `${r.name} is full` : `Queued for ${r.name}`;
+  openDialog(`<p class="dlg-title" id="dlgTitle">${full}</p>
+    <p class="dlg-text">Position in queue: <span class="big" id="qPos">${pos.toLocaleString()}</span></p>
+    <p class="dlg-text">Estimated time: <b id="qEta">${fmtEta(pos)}</b></p>
+    <p class="dlg-text small" id="qNote">Please stay at this screen. You will be connected when a slot opens.</p>${buttons(list)}`);
+  bindButtons(list);
+  const tick = async () => {
+    if (tok !== flow) return;
+    const roll = Math.random();
+    const note = $('qNote');
+    if (roll < 0.035 && pos > 50) {
+      pos += randInt(1500, 9000);
+      if (note) note.textContent = `${r.name} restarted. Your position has been recalculated.`;
+    } else if (roll < 0.06) {
+      if (note) note.textContent = 'The queue is paused while login servers recover.';
+    } else if (roll > 0.15) {
+      pos -= roll > 0.92 ? randInt(80, 400) : randInt(4, 60);
+      if (note && Math.random() < 0.2) note.textContent = pick(['Please stay at this screen. You will be connected when a slot opens.', 'Do not close the game. You will lose your place in line.', `${randInt(2, 40).toLocaleString()} players ahead of you went to make a sandwich.`, 'Thank you for your patience.']);
+    }
+    if (pos <= end) {
+      pos = end;
+      if (end === 1) {
+        $('qPos').textContent = '1'; $('qEta').textContent = 'less than 1 min';
+        $('qNote').textContent = 'You are next.';
+        await wait(rand(6000, 14000)); if (tok !== flow) return;
+        waiting('Logging in to game server');
+        await wait(rand(2500, 5000)); if (tok !== flow) return;
+        waiting('Loading characters');
+        await wait(rand(2000, 4000)); if (tok !== flow) return;
+        earn('back-of-line');
+        return fail(['Disconnected', 'You have been disconnected from the server. Your place in line has been lost.', 'Code AF-1047. You were first in line.'], [
+          { t: 'Rejoin Queue', p: true, fn: () => queue(r, ++flow, randInt(Math.max(r.q[0], 20000), Math.max(r.q[1], 38000))) },
+          { t: 'Okay' }
+        ]);
+      }
+      if (end <= 10) earn('so-close');
+      return fail(['Disconnected', 'You have been disconnected from the server.', `Code AF-1047. Last known position: ${end.toLocaleString()}.`], [
+        { t: 'Rejoin Queue', p: true, fn: () => queue(r, ++flow) },
+        { t: 'Okay' }
+      ]);
+    }
+    const p = $('qPos'), e = $('qEta');
+    if (p) p.textContent = pos.toLocaleString();
+    if (e) e.textContent = fmtEta(pos);
+    if (pos < 500) earn('under-500');
+    setTimeout(tick, rand(1500, 4200));
+  };
+  setTimeout(tick, rand(2000, 4000));
+}
+function realmList() {
+  bump('realmchanges'); if (store.get('realmchanges', 0) >= 5) earn('hopper');
+  const cls = p => ({ Full: 'pop-full', Offline: 'pop-off', Locked: 'pop-off', High: 'pop-high', Medium: 'pop-med', New: 'pop-new' })[p] || '';
+  const qtxt = r => r.pop === 'Offline' || r.pop === 'Locked' ? '—' : r.pop === 'New' ? 'None' : '~' + Math.round(rand(r.q[0], r.q[1]) / 100) * 100;
+  const rows = REALMS.map((r, i) => `<tr class="pick${r === realm ? ' sel' : ''}" tabindex="0" data-i="${i}"><td>${r.name}${r.born ? ' <span class="pop-new">(New)</span>' : ''}</td><td>${r.type}</td><td class="${cls(r.pop)}">${r.pop === 'New' ? 'Low' : r.pop}</td><td>${qtxt(r).toLocaleString()}</td></tr>`).join('');
+  const list = [{ t: 'Cancel' }];
+  openDialog(`<p class="dlg-title" id="dlgTitle">Realm Selection</p><div class="tablewrap"><table class="realms"><thead><tr><th>Realm</th><th>Type</th><th>Population</th><th>Queue</th></tr></thead><tbody>${rows}</tbody></table></div>${buttons(list)}`, true);
+  bindButtons(list);
+  box.querySelectorAll('tr.pick').forEach(tr => {
+    const go = async () => {
+      realm = REALMS[+tr.dataset.i]; store.set('realm', realm.name); $('realmName').textContent = realm.name;
+      const rsel = $('changeRealm'); rsel.classList.remove('flash-ok'); void rsel.offsetWidth; rsel.classList.add('flash-ok');
+      const tok = ++flow;
+      waiting('Connecting to ' + realm.name);
+      await wait(rand(1200, 2800)); if (tok !== flow) return;
+      joinRealm(realm, tok);
+    };
+    tr.addEventListener('click', go);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+$('login').addEventListener('submit', login);
+$('changeRealm').addEventListener('click', realmList);
+['acct', 'pw'].forEach(id => $(id).addEventListener('input', () => { $(id).removeAttribute('aria-invalid'); $(id + 'Err').textContent = ''; }));
+$('settingsBtn').addEventListener('click', () => options());
+const savedAcct = store.get('acct', null);
+if (savedAcct) $('acct').value = savedAcct;
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) { const c = [...box.querySelectorAll('.dlg-btns .btn')].pop(); if (c) c.click(); } });
+
+/* =========================== MENU =========================== */
+let dlTimer = null;
+function cinematics() {
+  const list = [{ t: 'Close', fn: () => { clearInterval(dlTimer); closeDialog(); } }];
+  openDialog(`<p class="dlg-title" id="dlgTitle">Opening Cinematic</p><p class="dlg-text">The cinematic is still downloading. The download servers are also busy.</p><div class="bar"><i id="dlBar"></i></div><p class="dlg-text small" id="dlTxt"></p>${buttons(list)}`);
+  bindButtons(list);
+  const total = 4.8 * 1024; let got = store.get('dl', 0);
+  const upd = () => {
+    got = Math.min(total * 0.993, got + Math.random() * 0.4); store.set('dl', got);
+    const bar = $('dlBar'), txt = $('dlTxt'); if (!bar) return clearInterval(dlTimer);
+    bar.style.width = (got / total * 100).toFixed(2) + '%';
+    txt.textContent = `${(got / total * 100).toFixed(2)}% (${got.toFixed(1)} MB of 4.8 GB) at ${randInt(2, 30)} KB/s`;
+  };
+  upd(); clearInterval(dlTimer); dlTimer = setInterval(upd, 1000);
+}
+function credits() {
+  const sections = [
+    ['Gate Design', 'Orla Venn', 'Pim Achterberg'], ['Fog Engineering', 'Basil Thorne', 'Ines Okafor'],
+    ['Queue Systems', 'The Queue Team (still in the queue)'], ['Login Servers', 'Server 1', 'Server 2 (on fire)'],
+    ['Lightning', 'Weather Department'], ['Ambient Music', 'A sine wave and a lot of reverb'],
+    ['Community Management', 'Hamish Lowe (has not slept)'], ['Compensation Committee', 'Tuesday Mornings'],
+    ['Quality Assurance', 'Everyone who never got in'], ['Special Thanks', 'You, for waiting']
+  ];
+  openDialog(`<p class="dlg-title" id="dlgTitle">Credits</p><div class="credits"><div>${sections.map(([h, ...n]) => `<h4>${h}</h4>${n.join('<br>')}`).join('')}</div></div>${buttons([{ t: 'Close' }])}`);
+  bindButtons([{ t: 'Close' }]);
+}
+function options() {
+  openDialog(`<p class="dlg-title" id="dlgTitle">Options</p>
+    <div class="opt">
+      <span>Graphics</span><span class="dlg-text small" style="margin:0">Ultra. It is one screen.</span>
+      <span>Realm</span><span class="dlg-text small" style="margin:0">${realm.name}</span>
+    </div>${buttons([{ t: 'Done', p: true }])}`);
+  bindButtons([{ t: 'Done', p: true }]);
+}
+function quit() {
+  message('Quit', 'Are you sure you want to quit? You will lose your place in every queue.', [
+    { t: 'Quit', fn: () => {
+      closeDialog(); flow++;
+      $('veil').classList.add('on'); ['ui', 'side', 'topright', 'menu'].forEach(id => $(id).classList.add('gone'));
+      setTimeout(() => {
+        $('veil').classList.remove('on'); ['ui', 'side', 'topright', 'menu'].forEach(id => $(id).classList.remove('gone'));
+        earn('no-leaving');
+      }, 4200);
+    } },
+    { t: 'Stay' }
+  ]);
+}
+document.querySelector('.menu').addEventListener('click', e => {
+  const act = e.target.closest('[data-act]'); if (!act) return;
+  ({ account: () => message('Manage Account', 'The account website is experiencing high traffic. Please try again later.', [{ t: 'Okay' }], 'Code AF-5030'), cinematics, credits, options, quit })[act.dataset.act]();
+});
+
+/* =========================== TIME + ACHIEVEMENTS =========================== */
+const ACH = {
+  'one-minute': ['Reading the Patch Notes', 'One minute at the gate.'],
+  'ten-minutes': ['Settled In', 'Ten minutes at the gate.'],
+  'half-hour': ['One With the Fog', 'Thirty minutes at the gate.'],
+  'hour': ['Eternal Vigil', 'One hour at the gate.'],
+  'three-hours': ['Part of the Masonry', 'Three hours at the gate.'],
+  'so-close': ['So Close', 'Disconnected near the front of the queue.'],
+  'back-of-line': ['Back of the Line', 'Reached position 1. Lost it.'],
+  'under-500': ['The Light Ahead', 'Reached position 499 or better.'],
+  'persistent': ['Persistent', 'Tried to log in ten times.'],
+  'patch-fail': ['Have You Tried Restarting It', 'Watched the patch fail at 99%.'],
+  'new-realm': ['Early Adopter', 'Joined a brand-new realm. It was already full.'],
+  'hopper': ['Realm Hopper', 'Opened the realm list five times.'],
+  'no-leaving': ['There Is No Exit', 'Tried to quit.']
+};
+let earned = store.get('ach', {}), toastTimer = null;
+function earn(id) {
+  if (earned[id]) return;
+  earned[id] = Date.now(); store.set('ach', earned);
+  const [n, d] = ACH[id], el = $('toast');
+  el.innerHTML = `${ORN}<small>Achievement</small><b>${n}</b><span>${d}</span>`;
+  el.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
+}
+function bump(k) { const n = store.get(k, 0) + 1; store.set(k, n); if (k === 'logins' && n >= 10) earn('persistent'); }
+
+const pad2 = n => String(n).padStart(2, '0');
+const startAt = Date.now();
+let launchAt = store.get('launchAt', 0);
+if (!launchAt) { launchAt = Date.now() - (2 * 3600 + 17 * 60) * 1000; store.set('launchAt', launchAt); }
+let totalBase = store.get('total', 0), lastSaved = Date.now(), world = randInt(1180000, 1320000);
+setInterval(() => {
+  const now = Date.now(), s = Math.floor((now - startAt) / 1000);
+  $('tSession').textContent = `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`;
+  totalBase += (now - lastSaved) / 1000; lastSaved = now; store.set('total', totalBase);
+  const tm = Math.floor(totalBase / 60);
+  $('tTotal').textContent = tm >= 60 ? `${Math.floor(tm / 60)}h ${tm % 60}m` : `${tm}m`;
+  const lm = Math.floor((now - launchAt) / 60000);
+  $('tLaunch').textContent = lm >= 1440 ? `Day ${Math.floor(lm / 1440) + 1}, still launching` : `${Math.floor(lm / 60)}h ${lm % 60}m ago`;
+  world += randInt(-120, 420); $('tWorld').textContent = world.toLocaleString();
+  if (s >= 60) earn('one-minute'); if (s >= 600) earn('ten-minutes'); if (s >= 1800) earn('half-hour');
+  if (s >= 3600) earn('hour'); if (s >= 10800) earn('three-hours');
+  if (s % 4 === 0) $('ping').textContent = `Latency: ${randInt(180, 2400)} ms`;
+}, 1000);
+})();
+</script>
+</body>
+</html>
