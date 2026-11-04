@@ -4,7 +4,7 @@ A launch-day queue simulator. It's a parody of what logging in to a fantasy MMO 
 
 There's no game behind it. The whole point is the login screen.
 
-**Play it:** https://tsroka001.github.io/world-of-quecraft/
+**Play it:** download `index.html` and open it in a browser.
 
 ## What's in it
 
